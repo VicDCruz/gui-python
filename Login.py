@@ -7,10 +7,12 @@
 # WARNING! All changes made in this file will be lost!
 
 from PyQt5 import QtCore, QtGui, QtWidgets
+from Form import Form
 
 
-class Ui_MainWindow(object):
+class Login(object):
     def setupUi(self, MainWindow):
+        self.MainWindow = MainWindow
         MainWindow.setObjectName("MainWindow")
         MainWindow.setEnabled(True)
         MainWindow.resize(413, 418)
@@ -77,12 +79,20 @@ class Ui_MainWindow(object):
         self.label.setText(_translate("MainWindow", "Usuario"))
         self.label_2.setText(_translate("MainWindow", "Contraseña"))
         self.pushButton.setText(_translate("MainWindow", "Ingresar"))
-        # self.lblIncorrect.setText(_translate(
-        #     "MainWindow", "Usuario incorrecto"))
+
+    def changeToLogin(self):
+        # self.window = QtWidgets.QMainWindow()
+        self.ui = Form()
+        # self.ui.setupUi(self.window)
+        self.MainWindow.move(600, 100)
+        self.ui.setupUi(self.MainWindow)
+        # self.window.show
+        # MainWindow.hide()
 
     def checkCredentials(self):
         if (self.txtUser.text() == 'hola' and self.txtPwd.text() == 'hola'):
             self.lblIncorrect.setText('Correcto')
+            self.changeToLogin()
         else:
             self.lblIncorrect.setText('Datos incorrectos')
 
@@ -91,7 +101,7 @@ if __name__ == "__main__":
     import sys
     app = QtWidgets.QApplication(sys.argv)
     MainWindow = QtWidgets.QMainWindow()
-    ui = Ui_MainWindow()
+    ui = Login()
     ui.setupUi(MainWindow)
     MainWindow.show()
     sys.exit(app.exec_())
