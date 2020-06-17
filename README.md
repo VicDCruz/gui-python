@@ -3,6 +3,7 @@ Explore a new to create a GUI for Windows. Also, building and deploying it.
 
 # Comandos importantes
 - `pyuic5 -x ventana.ui -o ventana_ui.py`
+- `pyinstaller --onefile -w --icon=favicon.ico Login.py`
 
 
 # References
@@ -13,3 +14,5 @@ Explore a new to create a GUI for Windows. Also, building and deploying it.
 - [Install Anaconda](https://medium.com/@hektorprofe/tutorial-windows-10-agregar-el-python-de-anaconda-al-path-para-utilizarlo-en-la-cmd-y-powershell-72acf22901a)
 - [Driver para usar archivos Access](https://www.microsoft.com/en-us/download/details.aspx?id=54920). Automatically detects the driver, install & download
 - [Install Graphs for PyQT5](https://www.learnpyqt.com/courses/graphics-plotting/plotting-pyqtgraph/)
+- [Add Plotly to PyQT5](https://stackoverflow.com/a/46658348)
+- [Plotly graphs](https://plotly.com/python/)
