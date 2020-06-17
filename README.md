@@ -16,3 +16,4 @@ Explore a new to create a GUI for Windows. Also, building and deploying it.
 - [Install Graphs for PyQT5](https://www.learnpyqt.com/courses/graphics-plotting/plotting-pyqtgraph/)
 - [Add Plotly to PyQT5](https://stackoverflow.com/a/46658348)
 - [Plotly graphs](https://plotly.com/python/)
+- [How to execute queries created at MS Access with pyodbc](https://stackoverflow.com/a/34635700)
