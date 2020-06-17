@@ -166,139 +166,31 @@ class Form(object):
         self.radioProcess.setText(_translate("MainWindow", "Uso por Proceso"))
         self.radioName.setText(_translate("MainWindow", "Nombre Dato"))
         self.radioDataType.setText(_translate("MainWindow", "Tipo de dato"))
-        # self.textEdit.setHtml(_translate("MainWindow", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
-        #                                  "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
-        #                                  "p, li { white-space: pre-wrap; }\n"
-        #                                  "</style></head><body style=\" font-family:\'MS Shell Dlg 2\'; font-size:9pt; font-weight:400; font-style:normal;\">\n"
-        #                                  "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-weight:600;\">Sin resultados</span></p></body></html>"))
-        self.textEdit.setHtml(r"""
-        <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd">
-        <html>
-
-        <head>
-            <meta name="qrichtext" content="1" />
-            <style>
-                #chartdiv {
-                    width: 100%;
-                    height: 500px;
-                }
-            </style>
-
-            <!-- Resources -->
-            <script src="https://www.amcharts.com/lib/4/core.js"></script>
-            <script src="https://www.amcharts.com/lib/4/charts.js"></script>
-            <script src="https://www.amcharts.com/lib/4/themes/animated.js"></script>
-
-        </head>
-
-        <body style=" font-family:\'MS Shell Dlg 2\'; font-size:9pt; font-weight:400; font-style:normal;">
-            <script>
-                am4core.ready(function () {
-
-                    // Themes begin
-                    am4core.useTheme(am4themes_animated);
-                    // Themes end
-
-                    // Create chart instance
-                    var chart = am4core.create("chartdiv", am4charts.XYChart);
-
-                    // Add data
-                    chart.data = [{
-                        "country": "USA",
-                        "visits": 2025
-                    }, {
-                        "country": "China",
-                        "visits": 1882
-                    }, {
-                        "country": "Japan",
-                        "visits": 1809
-                    }, {
-                        "country": "Germany",
-                        "visits": 1322
-                    }, {
-                        "country": "UK",
-                        "visits": 1122
-                    }, {
-                        "country": "France",
-                        "visits": 1114
-                    }, {
-                        "country": "India",
-                        "visits": 984
-                    }, {
-                        "country": "Spain",
-                        "visits": 711
-                    }, {
-                        "country": "Netherlands",
-                        "visits": 665
-                    }, {
-                        "country": "Russia",
-                        "visits": 580
-                    }, {
-                        "country": "South Korea",
-                        "visits": 443
-                    }, {
-                        "country": "Canada",
-                        "visits": 441
-                    }, {
-                        "country": "Brazil",
-                        "visits": 395
-                    }];
-
-                    // Create axes
-
-                    var categoryAxis = chart.xAxes.push(new am4charts.CategoryAxis());
-                    categoryAxis.dataFields.category = "country";
-                    categoryAxis.renderer.grid.template.location = 0;
-                    categoryAxis.renderer.minGridDistance = 30;
-
-                    categoryAxis.renderer.labels.template.adapter.add("dy", function (dy, target) {
-                        if (target.dataItem && target.dataItem.index & 2 == 2) {
-                            return dy + 25;
-                        }
-                        return dy;
-                    });
-
-                    var valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
-
-                    // Create series
-                    var series = chart.series.push(new am4charts.ColumnSeries());
-                    series.dataFields.valueY = "visits";
-                    series.dataFields.categoryX = "country";
-                    series.name = "Visits";
-                    series.columns.template.tooltipText = "{categoryX}: [bold]{valueY}[/]";
-                    series.columns.template.fillOpacity = .8;
-
-                    var columnTemplate = series.columns.template;
-                    columnTemplate.strokeWidth = 2;
-                    columnTemplate.strokeOpacity = 1;
-
-                }); // end am4core.ready()
-            </script>
-            <div id="chartdiv"></div>
-        </body>
-
-        </html>
-        """)
+        self.textEdit.setHtml(_translate("MainWindow", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+                                         "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
+                                         "p, li { white-space: pre-wrap; }\n"
+                                         "</style></head><body style=\" font-family:\'MS Shell Dlg 2\'; font-size:9pt; font-weight:400; font-style:normal;\">\n"
+                                         "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-weight:600;\">Sin resultados</span></p></body></html>"))
         self.btnNext.setText(_translate("MainWindow", "Siguiente"))
         self.btnBack.setText(_translate("MainWindow", "Anterior"))
         self.btnPolicy.setText(_translate("MainWindow", "Ver política"))
         self.lblPagination.setText(_translate("MainWindow", "de"))
 
-    def startLog(self):
-        logging.basicConfig(filename='Lumberjack.log',
-                            level=logging.DEBUG, format=LOG_FORMAT)
-        self.logger = logging.getLogger()
-
     def setByProcess(self):
         query = r"{CALL qryConsultaporTextoListaDatoUsoProceso(?)}"
         headers = ('Clave Proceso', 'Lista Total', 'INAI Gran Dato',
-                   'Guia BAUM', 'Tipo de uso', 'Documento')
+                   'Guia BAUM', 'Tipo de uso', 'Documento', 
+                   'Tipo de dato', 'Agrupación a Tipo de dato INAI con casu', 'Nivel INAI')
         self.setEnvironment(query, headers)
 
     def setByName(self):
         query = r"{CALL qryConsultaporTextoenNombreDato(?)}"
-        headers = ('Nombre del dato', 'Libro', 'IdDato',
-                   'Tipo de dato', 'Fuente de referencia', 'Gran dato')
+        headers = ('Libro', 'Nombre del dato', 'Lista dato',
+                   'Gran dato', 'Descripción del dato', 'Tipo de dato',
+                   'CDE', 'Dato obligatorio', 'Clasificación', 
+                   'Fuente de referencia', 'Validaciones', 'Impacto regulatorio',
+                   'Impacto sistemas', 'Impacto Negocio', 'Regulación',
+                   'Reporte asociado', 'Clasificación')
         self.setEnvironment(query, headers)
 
     def setByDataType(self):
@@ -322,6 +214,7 @@ class Form(object):
         self.headers = headers
 
     def connectToDb(self):
+        self.logger.info("Connection to DB")
         accessDriver = r'Microsoft Access Driver (*.mdb, *.accdb)'
         filepath = r'./AnaliticaData.accdb'
         self.conn = pyodbc.connect(driver=accessDriver,
@@ -346,6 +239,7 @@ class Form(object):
 
     def search(self):
         word = self.txtWord.text()
+        self.logger.debug("Word: " + word)
         if (word is not None and word != ''):
             self.data = self.exec(self.query, word)
             if (len(self.data) > 0):
@@ -362,10 +256,15 @@ class Form(object):
 
     def summary(self, row):
         output = ""
-        width = len(row)
+        width = len(self.headers)
         for x in range(width):
             output += "<b>{0}:</b> {1}<br/>".format(self.headers[x], row[x])
         return output
+
+    def startLog(self):
+        logging.basicConfig(filename='Lumberjack.log',
+                            level=logging.DEBUG, format=LOG_FORMAT)
+        self.logger = logging.getLogger()
 
 
 if __name__ == "__main__":
