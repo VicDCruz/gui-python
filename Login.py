@@ -7,12 +7,15 @@
 # WARNING! All changes made in this file will be lost!
 
 from PyQt5 import QtCore, QtGui, QtWidgets
-from Form import Form
+from Menu import Menu
+import pyodbc
+import logging
+
+LOG_FORMAT = "%(levelname)s %(asctime)s - %(message)s"
 
 
 class Login(object):
     def setupUi(self, MainWindow):
-        self.MainWindow = MainWindow
         MainWindow.setObjectName("MainWindow")
         MainWindow.setEnabled(True)
         MainWindow.resize(413, 418)
@@ -70,8 +73,11 @@ class Login(object):
         self.statusbar.setObjectName("statusbar")
         MainWindow.setStatusBar(self.statusbar)
 
+        self.startLog()
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
+        self.MainWindow = MainWindow
+
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
@@ -81,21 +87,22 @@ class Login(object):
         self.pushButton.setText(_translate("MainWindow", "Ingresar"))
 
     def changeToLogin(self):
-        # self.window = QtWidgets.QMainWindow()
-        self.ui = Form()
-        # self.ui.setupUi(self.window)
+        self.ui = Menu()
         self.MainWindow.move(600, 100)
+        self.logger.info("Successful login")
         self.ui.setupUi(self.MainWindow)
-        # self.window.show
-        # MainWindow.hide()
 
     def checkCredentials(self):
-        if (self.txtUser.text() == 'hola' and self.txtPwd.text() == 'hola'):
+        if (self.txtUser.text() == 'admin' and self.txtPwd.text() == 'admin'):
             self.lblIncorrect.setText('Correcto')
             self.changeToLogin()
         else:
             self.lblIncorrect.setText('Datos incorrectos')
 
+    def startLog(self):
+        logging.basicConfig(filename='Lumberjack.log',
+                            level=logging.DEBUG, format=LOG_FORMAT)
+        self.logger = logging.getLogger()
 
 if __name__ == "__main__":
     import sys
