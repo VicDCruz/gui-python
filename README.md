@@ -3,8 +3,10 @@ Explore a new to create a GUI for Windows. Also, building and deploying it.
 
 # Comandos importantes
 - `pyuic5 -x ventana.ui -o ventana_ui.py`
-- `pyinstaller --onefile -w --icon=favicon.ico Login.py`
+- `pyinstaller --onedir -w --icon=favicon.ico Login.py`
+- `pyinstaller .\Login.spec .\Login.py`
 
+Ruta de Anaconda: `C:\Users\vicda\anaconda3\Library\bin`
 
 # References
 - [Primeros pasos para PyQT5 y Qt Designer](https://medium.com/@hektorprofe/primeros-pasos-en-pyqt-5-y-qt-designer-programas-gr%C3%A1ficos-con-python-6161fba46060)
@@ -17,3 +19,4 @@ Explore a new to create a GUI for Windows. Also, building and deploying it.
 - [Add Plotly to PyQT5](https://stackoverflow.com/a/46658348)
 - [Plotly graphs](https://plotly.com/python/)
 - [How to execute queries created at MS Access with pyodbc](https://stackoverflow.com/a/34635700)
+- [Pyinstaller fails with plotly](https://stackoverflow.com/a/61119844)

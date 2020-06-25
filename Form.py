@@ -142,19 +142,44 @@ class Form(object):
         self.verticalLayout.addLayout(self.gridLayout)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 829, 26))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 899, 26))
         self.menubar.setObjectName("menubar")
+        self.menuMenu = QtWidgets.QMenu(self.menubar)
+        self.menuMenu.setObjectName("menuMenu")
         MainWindow.setMenuBar(self.menubar)
         self.statusbar = QtWidgets.QStatusBar(MainWindow)
         self.statusbar.setObjectName("statusbar")
         MainWindow.setStatusBar(self.statusbar)
+        self.actionInicio = QtWidgets.QAction(MainWindow)
+        self.actionInicio.setObjectName("actionInicio")
+        if (self.toMenu is not None):
+            self.actionInicio.triggered.connect(self.toMenu)
+        self.actionConsulta = QtWidgets.QAction(MainWindow)
+        self.actionConsulta.setObjectName("actionConsulta")
+        if (self.toGraph is not None):
+            self.actionConsulta.triggered.connect(self.toGraph)
+        self.actionBusqueda = QtWidgets.QAction(MainWindow)
+        self.actionBusqueda.setObjectName("actionBusqueda")
+        if (self.toSearchByWord is not None):
+            self.actionBusqueda.triggered.connect(self.toSearchByWord)
+        self.actionDatoRegulado = QtWidgets.QAction(MainWindow)
+        self.actionDatoRegulado.setObjectName("actionDatoRegulado")
+        if (self.toRegulatedData is not None):
+            self.actionDatoRegulado.triggered.connect(self.toRegulatedData)
+        self.menuMenu.addAction(self.actionInicio)
+        self.menuMenu.addSeparator()
+        self.menuMenu.addAction(self.actionConsulta)
+        self.menuMenu.addAction(self.actionBusqueda)
+        self.menuMenu.addAction(self.actionDatoRegulado)
+        self.menubar.addAction(self.menuMenu.menuAction())
 
-        self.retranslateUi(MainWindow)
+        self.MainWindow = MainWindow
         self.startLog()
         self.connectToDb()
         self.setByProcess()
         self.index = 1
         self.limitPagination = 1
+        self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
@@ -175,6 +200,17 @@ class Form(object):
         self.btnBack.setText(_translate("MainWindow", "Anterior"))
         self.btnPolicy.setText(_translate("MainWindow", "Ver política"))
         self.lblPagination.setText(_translate("MainWindow", "de"))
+        self.menuMenu.setTitle(_translate("MainWindow", "Menu"))
+        self.actionInicio.setText(_translate("MainWindow", "Inicio"))
+        self.actionConsulta.setText(_translate("MainWindow", "Gráficas"))
+        self.actionBusqueda.setText(_translate("MainWindow", "Búsqueda"))
+        self.actionDatoRegulado.setText(_translate("MainWindow", "DatoRegulado"))
+
+    def setOptionsMenu(self, toMenu, toRegulatedData, toGraph, toSearchByWord):
+        self.toMenu = toMenu
+        self.toRegulatedData = toRegulatedData
+        self.toGraph = toGraph
+        self.toSearchByWord = toSearchByWord
 
     def setByProcess(self):
         query = r"{CALL qryConsultaporTextoListaDatoUsoProceso(?)}"

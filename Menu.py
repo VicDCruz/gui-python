@@ -12,6 +12,7 @@ import logging
 
 from Form import Form
 from GraphQueries import GraphQueries
+from RegulatedData import RegulatedData
 
 LOG_FORMAT = "%(levelname)s %(asctime)s - %(message)s"
 
@@ -27,9 +28,9 @@ class Menu(object):
         self.btnGraphs = QtWidgets.QPushButton(self.centralwidget)
         self.btnGraphs.setObjectName("btnGraphs")
         self.gridLayout.addWidget(self.btnGraphs, 0, 0, 1, 1)
-        self.pushButton_3 = QtWidgets.QPushButton(self.centralwidget)
-        self.pushButton_3.setObjectName("pushButton_3")
-        self.gridLayout.addWidget(self.pushButton_3, 2, 0, 1, 1)
+        self.btnRegulatedData = QtWidgets.QPushButton(self.centralwidget)
+        self.btnRegulatedData.setObjectName("btnRegulatedData")
+        self.gridLayout.addWidget(self.btnRegulatedData, 2, 0, 1, 1)
         self.btnSearchByWord = QtWidgets.QPushButton(self.centralwidget)
         self.btnSearchByWord.setObjectName("btnSearchByWord")
         self.gridLayout.addWidget(self.btnSearchByWord, 1, 0, 1, 1)
@@ -41,9 +42,31 @@ class Menu(object):
         self.statusbar = QtWidgets.QStatusBar(MainWindow)
         self.statusbar.setObjectName("statusbar")
         MainWindow.setStatusBar(self.statusbar)
+        self.menuMenu = QtWidgets.QMenu(self.menubar)
+        self.menuMenu.setObjectName("menuMenu")
+        MainWindow.setMenuBar(self.menubar)
+        self.actionInicio = QtWidgets.QAction(MainWindow)
+        self.actionInicio.setObjectName("actionInicio")
+        self.actionInicio.triggered.connect(self.toMenu)
+        self.actionConsulta = QtWidgets.QAction(MainWindow)
+        self.actionConsulta.setObjectName("actionConsulta")
+        self.actionConsulta.triggered.connect(self.toGraph)
+        self.actionBusqueda = QtWidgets.QAction(MainWindow)
+        self.actionBusqueda.setObjectName("actionBusqueda")
+        self.actionBusqueda.triggered.connect(self.toSearchByWord)
+        self.actionDatoRegulado = QtWidgets.QAction(MainWindow)
+        self.actionDatoRegulado.setObjectName("actionDatoRegulado")
+        self.actionDatoRegulado.triggered.connect(self.toRegulatedData)
+        self.menuMenu.addAction(self.actionInicio)
+        self.menuMenu.addSeparator()
+        self.menuMenu.addAction(self.actionConsulta)
+        self.menuMenu.addAction(self.actionBusqueda)
+        self.menuMenu.addAction(self.actionDatoRegulado)
+        self.menubar.addAction(self.menuMenu.menuAction())
 
         self.btnGraphs.clicked.connect(self.toGraph)
         self.btnSearchByWord.clicked.connect(self.toSearchByWord)
+        self.btnRegulatedData.clicked.connect(self.toRegulatedData)
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
         self.MainWindow = MainWindow
@@ -52,17 +75,39 @@ class Menu(object):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
         self.btnGraphs.setText(_translate("MainWindow", "Gráficas"))
-        self.pushButton_3.setText(_translate("MainWindow", "Otro"))
+        self.btnRegulatedData.setText(
+            _translate("MainWindow", "Dato regulado"))
         self.btnSearchByWord.setText(_translate(
             "MainWindow", "Búsqueda por palabra"))
+        self.menuMenu.setTitle(_translate("MainWindow", "Menu"))
+        self.actionInicio.setText(_translate("MainWindow", "Inicio"))
+        self.actionConsulta.setText(_translate("MainWindow", "Gráficas"))
+        self.actionBusqueda.setText(_translate("MainWindow", "Búsqueda"))
+        self.actionDatoRegulado.setText(_translate("MainWindow", "DatoRegulado"))
 
     def toSearchByWord(self):
         self.ui = Form()
+        self.ui.setOptionsMenu(
+            self.toMenu, self.toRegulatedData, self.toGraph, self.toSearchByWord)
         self.MainWindow.move(600, 100)
         self.ui.setupUi(self.MainWindow)
 
     def toGraph(self):
         self.ui = GraphQueries()
+        self.ui.setOptionsMenu(
+            self.toMenu, self.toRegulatedData, self.toGraph, self.toSearchByWord)
+        self.MainWindow.move(600, 100)
+        self.ui.setupUi(self.MainWindow)
+
+    def toRegulatedData(self):
+        self.ui = RegulatedData()
+        self.ui.setOptionsMenu(
+            self.toMenu, self.toRegulatedData, self.toGraph, self.toSearchByWord)
+        self.MainWindow.move(600, 100)
+        self.ui.setupUi(self.MainWindow)
+
+    def toMenu(self):
+        self.ui = self
         self.MainWindow.move(600, 100)
         self.ui.setupUi(self.MainWindow)
 
@@ -72,11 +117,11 @@ class Menu(object):
         self.logger = logging.getLogger()
 
 
-# if __name__ == "__main__":
-    # import sys
-    # app = QtWidgets.QApplication(sys.argv)
-    # MainWindow = QtWidgets.QMainWindow()
-    # ui = Menu()
-    # ui.setupUi(MainWindow)
-    # MainWindow.show()
-    # sys.exit(app.exec_())
+if __name__ == "__main__":
+    import sys
+    app = QtWidgets.QApplication(sys.argv)
+    MainWindow = QtWidgets.QMainWindow()
+    ui = Menu()
+    ui.setupUi(MainWindow)
+    MainWindow.show()
+    sys.exit(app.exec_())

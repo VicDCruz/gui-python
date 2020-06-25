@@ -122,7 +122,7 @@
     <addaction name="actionInicio"/>
     <addaction name="separator"/>
     <addaction name="actionConsulta"/>
-    <addaction name="actionB_squeda"/>
+    <addaction name="actionBusqueda"/>
    </widget>
    <addaction name="menuMenu"/>
   </widget>
@@ -137,7 +137,7 @@
     <string>Consulta</string>
    </property>
   </action>
-  <action name="actionB_squeda">
+  <action name="actionBusqueda">
    <property name="text">
     <string>Búsqueda</string>
    </property>

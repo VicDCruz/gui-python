@@ -85,30 +85,41 @@ class GraphQueries(object):
         self.btnContract = QtWidgets.QPushButton(self.centralwidget)
         self.btnContract.setObjectName("btnContract")
         self.gridLayout.addWidget(self.btnContract, 6, 2, 1, 1)
-        # self.view = QtWebEngineWidgets.QWebEngineView(self.centralwidget)
+        self.view = QtWebEngineWidgets.QWebEngineView(self.centralwidget)
         # self.view.setUrl(QtCore.QUrl("about:blank"))
-        # self.view.setObjectName("view")
-        # self.gridLayout.addWidget(self.view, 4, 0, 2, 5)
+        self.view.setObjectName("view")
+        self.gridLayout.addWidget(self.view, 4, 0, 2, 5)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 899, 26))
         self.menubar.setObjectName("menubar")
-        self.menuMenu = QtWidgets.QMenu(self.menubar)
-        self.menuMenu.setObjectName("menuMenu")
-        MainWindow.setMenuBar(self.menubar)
         self.statusbar = QtWidgets.QStatusBar(MainWindow)
         self.statusbar.setObjectName("statusbar")
         MainWindow.setStatusBar(self.statusbar)
+        self.menuMenu = QtWidgets.QMenu(self.menubar)
+        self.menuMenu.setObjectName("menuMenu")
+        MainWindow.setMenuBar(self.menubar)
         self.actionInicio = QtWidgets.QAction(MainWindow)
         self.actionInicio.setObjectName("actionInicio")
+        if (self.toMenu is not None):
+            self.actionInicio.triggered.connect(self.toMenu)
         self.actionConsulta = QtWidgets.QAction(MainWindow)
         self.actionConsulta.setObjectName("actionConsulta")
-        self.actionB_squeda = QtWidgets.QAction(MainWindow)
-        self.actionB_squeda.setObjectName("actionB_squeda")
+        if (self.toGraph is not None):
+            self.actionConsulta.triggered.connect(self.toGraph)
+        self.actionBusqueda = QtWidgets.QAction(MainWindow)
+        self.actionBusqueda.setObjectName("actionBusqueda")
+        if (self.toSearchByWord is not None):
+            self.actionBusqueda.triggered.connect(self.toSearchByWord)
+        self.actionDatoRegulado = QtWidgets.QAction(MainWindow)
+        self.actionDatoRegulado.setObjectName("actionDatoRegulado")
+        if (self.toRegulatedData is not None):
+            self.actionDatoRegulado.triggered.connect(self.toRegulatedData)
         self.menuMenu.addAction(self.actionInicio)
         self.menuMenu.addSeparator()
         self.menuMenu.addAction(self.actionConsulta)
-        self.menuMenu.addAction(self.actionB_squeda)
+        self.menuMenu.addAction(self.actionBusqueda)
+        self.menuMenu.addAction(self.actionDatoRegulado)
         self.menubar.addAction(self.menuMenu.menuAction())
 
         self.btnBooks.clicked.connect(self.setByBooks)
@@ -124,6 +135,7 @@ class GraphQueries(object):
         self.graphType = None
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
+        self.MainWindow = MainWindow
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
@@ -136,8 +148,9 @@ class GraphQueries(object):
         self.btnContract.setText(_translate("MainWindow", "Contraer"))
         self.menuMenu.setTitle(_translate("MainWindow", "Menu"))
         self.actionInicio.setText(_translate("MainWindow", "Inicio"))
-        self.actionConsulta.setText(_translate("MainWindow", "Consulta"))
-        self.actionB_squeda.setText(_translate("MainWindow", "Búsqueda"))
+        self.actionConsulta.setText(_translate("MainWindow", "Gráficas"))
+        self.actionBusqueda.setText(_translate("MainWindow", "Búsqueda"))
+        self.actionDatoRegulado.setText(_translate("MainWindow", "DatoRegulado"))
 
     def connectToDb(self):
         self.logger.info("Connection to DB")
@@ -181,10 +194,13 @@ class GraphQueries(object):
             for i in range(len(columns)):
                 column = columns[i]
                 if (i == 0):
-                    fig = go.Figure(go.Bar(x=x, y=self.getColumn(data, i + 2), name=column))
+                    fig = go.Figure(
+                        go.Bar(x=x, y=self.getColumn(data, i + 2), name=column))
                 else:
-                    fig.add_trace(go.Bar(x=x, y=self.getColumn(data, i + 2), name=column))
-            fig.update_layout(barmode='stack', xaxis={'categoryorder':'category ascending'})
+                    fig.add_trace(
+                        go.Bar(x=x, y=self.getColumn(data, i + 2), name=column))
+            fig.update_layout(barmode='stack', xaxis={
+                              'categoryorder': 'category ascending'})
             self.show(fig, "Vista por libros")
 
     def setByProcesses(self):
@@ -230,8 +246,8 @@ class GraphQueries(object):
             raw_html += plotly.offline.plot(fig,
                                             include_plotlyjs=False, output_type='div')
         raw_html += '</body></html>'
-        # self.view.setHtml(raw_html)
-        # self.view.show()
+        self.view.setHtml(raw_html)
+        self.view.show()
 
     def showExpand(self):
         labels = [str(self.total)]
@@ -271,6 +287,11 @@ class GraphQueries(object):
         ))
         self.show(fig, self.title)
 
+    def setOptionsMenu(self, toMenu, toRegulatedData, toGraph, toSearchByWord):
+        self.toMenu = toMenu
+        self.toRegulatedData = toRegulatedData
+        self.toGraph = toGraph
+        self.toSearchByWord = toSearchByWord
 
 if __name__ == "__main__":
     import sys
