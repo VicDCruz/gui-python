@@ -20,7 +20,7 @@ path = QtCore.QDir.current().filePath('./plotly-latest.min.js')
 local = QtCore.QUrl.fromLocalFile(path).toString()
 
 
-class Ui_MainWindow(object):
+class Dashboard(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(841, 840)
@@ -284,7 +284,7 @@ if __name__ == "__main__":
     import sys
     app = QtWidgets.QApplication(sys.argv)
     MainWindow = QtWidgets.QMainWindow()
-    ui = Ui_MainWindow()
+    ui = Dashboard()
     ui.setupUi(MainWindow)
     MainWindow.show()
     sys.exit(app.exec_())
