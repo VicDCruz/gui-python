@@ -85,11 +85,16 @@ class RegulatedData(object):
         self.actionDatoRegulado.setObjectName("actionDatoRegulado")
         if (self.toRegulatedData is not None):
             self.actionDatoRegulado.triggered.connect(self.toRegulatedData)
+        self.actionDashboard = QtWidgets.QAction(MainWindow)
+        self.actionDashboard.setObjectName("actionDashboard")
+        if (self.toDashboard is not None):
+            self.actionDashboard.triggered.connect(self.toDashboard)
         self.menuMenu.addAction(self.actionInicio)
         self.menuMenu.addSeparator()
         self.menuMenu.addAction(self.actionConsulta)
         self.menuMenu.addAction(self.actionBusqueda)
         self.menuMenu.addAction(self.actionDatoRegulado)
+        self.menuMenu.addAction(self.actionDashboard)
         self.menubar.addAction(self.menuMenu.menuAction())
 
         self.startLog()
@@ -112,8 +117,9 @@ class RegulatedData(object):
         self.actionInicio.setText(_translate("MainWindow", "Inicio"))
         self.actionConsulta.setText(_translate("MainWindow", "Gráficas"))
         self.actionBusqueda.setText(_translate("MainWindow", "Búsqueda"))
-        self.actionDatoRegulado.setText(_translate("MainWindow", "DatoRegulado"))
-
+        self.actionDatoRegulado.setText(
+            _translate("MainWindow", "DatoRegulado"))
+        self.actionDashboard.setText(_translate("MainWindow", "Dashboard"))
 
     def connectToDb(self):
         self.logger.info("Connection to DB")
@@ -159,29 +165,29 @@ class RegulatedData(object):
 
     def getInformation(self):
         headers = ('Regla de presentación RENAPO', 'Regla de longitud RENAPO', 'Fuente de regulación',
-                    'Columna de regulación', 'Objetivo regulatorio PLD',
-                    'Regla de distribución para uso de la autoridad PLD',
-                    'Regla de presentación de reporte regulatorio PLD',
-                    'Tipo de dato PLD', 'Longitud del dato PLD', 'Dato obligatorio',
-                    'Regla de captura del dato',
-                    'Regla de emisión envio y caracteres del archivo',
-                    'Reglas de la nomenclatura de nombre del archivo PLD',
-                    'Regla presentación de catálogo de sucursales',
-                    'Regla para sujeto obligado PLD',
-                    'Incluirlo en reporte relevante PLD',
-                    'Incluirlo en reporte inusual PLD',
-                    'Incluirlo en reporte relevante PLD',
-                    'ID grupo INAI', 'Tipo de dato INAI', 'Descripción del nivel INAI',
-                    'Fundamento regulatorio INAI', 'Tratamiento regulatorio INAI',
-                    'Derecho regulatorio de las personas INAI',
-                    'Sanciones regulatorias INAI', 'Características regulatorias del dato INAI',
-                    'Validación regulatoria INAI', 'Dato ley instituciones financieras LIC',
-                    'Regla de dato LIC', 'Regla operativa LIC', 'Regla de identificación LIC',
-                    'Regla de expediente LIC', 'Regla de resguardo documento digital LIC',
-                    'Regla de secreto bancario LIC', 'Reglas de contratación LIC',
-                    'Regla de uso de firma electrónica avanzada LIC',
-                    'Regla para extranjeros LIC', 'Regla de validación CURP LIC',
-                    'Regla de validación canal digital')
+                   'Columna de regulación', 'Objetivo regulatorio PLD',
+                   'Regla de distribución para uso de la autoridad PLD',
+                   'Regla de presentación de reporte regulatorio PLD',
+                   'Tipo de dato PLD', 'Longitud del dato PLD', 'Dato obligatorio',
+                   'Regla de captura del dato',
+                   'Regla de emisión envio y caracteres del archivo',
+                   'Reglas de la nomenclatura de nombre del archivo PLD',
+                   'Regla presentación de catálogo de sucursales',
+                   'Regla para sujeto obligado PLD',
+                   'Incluirlo en reporte relevante PLD',
+                   'Incluirlo en reporte inusual PLD',
+                   'Incluirlo en reporte relevante PLD',
+                   'ID grupo INAI', 'Tipo de dato INAI', 'Descripción del nivel INAI',
+                   'Fundamento regulatorio INAI', 'Tratamiento regulatorio INAI',
+                   'Derecho regulatorio de las personas INAI',
+                   'Sanciones regulatorias INAI', 'Características regulatorias del dato INAI',
+                   'Validación regulatoria INAI', 'Dato ley instituciones financieras LIC',
+                   'Regla de dato LIC', 'Regla operativa LIC', 'Regla de identificación LIC',
+                   'Regla de expediente LIC', 'Regla de resguardo documento digital LIC',
+                   'Regla de secreto bancario LIC', 'Reglas de contratación LIC',
+                   'Regla de uso de firma electrónica avanzada LIC',
+                   'Regla para extranjeros LIC', 'Regla de validación CURP LIC',
+                   'Regla de validación canal digital')
         data = self.exec(r"""
             select RegladePresentacionRENAPO, RegladeLongitudRenapo, FuenteRegulatoriaPLD, ColumnaRegulacionLayoutPLD,
             ObjetivoRegulatorioPLD, RegladeDistribucionParaUsodelaAutoridadPLD, RegladePresentaciondeReporteRegulatirioPLD,
@@ -200,7 +206,7 @@ class RegulatedData(object):
 
     def getUse(self):
         headers = ('Nombre del proceos en libro', 'Clasificación del gran dato', 'Gran dato',
-                    'Lista total', 'Uso', 'DoctoFront')
+                   'Lista total', 'Uso', 'DoctoFront')
         data = self.exec(r"""
             select super.NombreProcesoLibro, super.ClasificaciondeGranDato,
                 super.GranDato, super.ListaTotal, super.Uso, super.DoctoFront
@@ -220,11 +226,13 @@ class RegulatedData(object):
             output += "<b>{0}:</b> {1}<br/>".format(headers[x], row[x])
         return output
 
-    def setOptionsMenu(self, toMenu, toRegulatedData, toGraph, toSearchByWord):
+    def setOptionsMenu(self, toMenu, toRegulatedData, toGraph, toSearchByWord, toDashboard):
         self.toMenu = toMenu
         self.toRegulatedData = toRegulatedData
         self.toGraph = toGraph
         self.toSearchByWord = toSearchByWord
+        self.toDashboard = toDashboard
+
 
 if __name__ == "__main__":
     import sys

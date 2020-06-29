@@ -93,27 +93,28 @@ class Menu(object):
         self.actionInicio.setText(_translate("MainWindow", "Inicio"))
         self.actionConsulta.setText(_translate("MainWindow", "Gráficas"))
         self.actionBusqueda.setText(_translate("MainWindow", "Búsqueda"))
-        self.actionDatoRegulado.setText(_translate("MainWindow", "Dato Regulado"))
+        self.actionDatoRegulado.setText(
+            _translate("MainWindow", "Dato Regulado"))
         self.actionDashboard.setText(_translate("MainWindow", "Dashboard"))
 
     def toSearchByWord(self):
         self.ui = Form()
         self.ui.setOptionsMenu(
-            self.toMenu, self.toRegulatedData, self.toGraph, self.toSearchByWord)
+            self.toMenu, self.toRegulatedData, self.toGraph, self.toSearchByWord, self.toDashboard)
         self.MainWindow.move(600, 100)
         self.ui.setupUi(self.MainWindow)
 
     def toGraph(self):
         self.ui = GraphQueries()
         self.ui.setOptionsMenu(
-            self.toMenu, self.toRegulatedData, self.toGraph, self.toSearchByWord)
+            self.toMenu, self.toRegulatedData, self.toGraph, self.toSearchByWord, self.toDashboard)
         self.MainWindow.move(600, 100)
         self.ui.setupUi(self.MainWindow)
 
     def toRegulatedData(self):
         self.ui = RegulatedData()
         self.ui.setOptionsMenu(
-            self.toMenu, self.toRegulatedData, self.toGraph, self.toSearchByWord)
+            self.toMenu, self.toRegulatedData, self.toGraph, self.toSearchByWord, self.toDashboard)
         self.MainWindow.move(600, 100)
         self.ui.setupUi(self.MainWindow)
 
@@ -124,6 +125,8 @@ class Menu(object):
 
     def toDashboard(self):
         self.ui = Dashboard()
+        self.ui.setOptionsMenu(
+            self.toMenu, self.toRegulatedData, self.toGraph, self.toSearchByWord, self.toDashboard)
         self.MainWindow.move(600, 100)
         self.ui.setupUi(self.MainWindow)
 

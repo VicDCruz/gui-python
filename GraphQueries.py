@@ -115,11 +115,16 @@ class GraphQueries(object):
         self.actionDatoRegulado.setObjectName("actionDatoRegulado")
         if (self.toRegulatedData is not None):
             self.actionDatoRegulado.triggered.connect(self.toRegulatedData)
+        self.actionDashboard = QtWidgets.QAction(MainWindow)
+        self.actionDashboard.setObjectName("actionDashboard")
+        if (self.toDashboard is not None):
+            self.actionDashboard.triggered.connect(self.toDashboard)
         self.menuMenu.addAction(self.actionInicio)
         self.menuMenu.addSeparator()
         self.menuMenu.addAction(self.actionConsulta)
         self.menuMenu.addAction(self.actionBusqueda)
         self.menuMenu.addAction(self.actionDatoRegulado)
+        self.menuMenu.addAction(self.actionDashboard)
         self.menubar.addAction(self.menuMenu.menuAction())
 
         self.btnBooks.clicked.connect(self.setByBooks)
@@ -150,7 +155,9 @@ class GraphQueries(object):
         self.actionInicio.setText(_translate("MainWindow", "Inicio"))
         self.actionConsulta.setText(_translate("MainWindow", "Gráficas"))
         self.actionBusqueda.setText(_translate("MainWindow", "Búsqueda"))
-        self.actionDatoRegulado.setText(_translate("MainWindow", "DatoRegulado"))
+        self.actionDatoRegulado.setText(
+            _translate("MainWindow", "DatoRegulado"))
+        self.actionDashboard.setText(_translate("MainWindow", "Dashboard"))
 
     def connectToDb(self):
         self.logger.info("Connection to DB")
@@ -287,11 +294,13 @@ class GraphQueries(object):
         ))
         self.show(fig, self.title)
 
-    def setOptionsMenu(self, toMenu, toRegulatedData, toGraph, toSearchByWord):
+    def setOptionsMenu(self, toMenu, toRegulatedData, toGraph, toSearchByWord, toDashboard):
         self.toMenu = toMenu
         self.toRegulatedData = toRegulatedData
         self.toGraph = toGraph
         self.toSearchByWord = toSearchByWord
+        self.toDashboard = toDashboard
+
 
 if __name__ == "__main__":
     import sys
