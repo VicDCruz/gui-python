@@ -75,6 +75,8 @@ class Login(object):
 
         self.startLog()
         self.retranslateUi(MainWindow)
+        MainWindow.setWindowTitle('BAZ Analitica Data')
+        MainWindow.setWindowIcon(QtGui.QIcon('favicon.ico'))
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
         self.MainWindow = MainWindow
 
