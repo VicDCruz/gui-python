@@ -21,43 +21,31 @@ sys.argv.append("--disable-web-security")
 path = QtCore.QDir.current().filePath('./plotly-latest.min.js')
 local = QtCore.QUrl.fromLocalFile(path).toString()
 
-QUERYBOOKS = r"""
-    SELECT GranDato, UsoLibros.Libro, COUNT(*)
-    FROM UsoLibros INNER JOIN MasterLibros
-    ON UsoLibros.IdDato = MasterLibros.IdDato
-    WHERE UsoLibros.Tipo_Linaje = 'Residencia'
-    AND GranDato = '{0}'
-    GROUP BY GranDato, UsoLibros.Libro;
+QUERYPROCCESSES = r"""
+    SELECT CatalogoGranDato.NombreGranDato, MasterProcesos.ClaveProceso, COUNT(*)
+    FROM CatalogoGranDato, MasterProcesos, UsoProcesos
+    WHERE CatalogoGranDato.NombreGranDato = '{0}'
+        AND MasterProcesos.ClaveGrandato = CatalogoGranDato.ClaveGracDato
+        AND MasterProcesos.ClaveDatoProceso = UsoProcesos.ClaveDatoProceso
+    GROUP BY CatalogoGranDato.NombreGranDato, MasterProcesos.ClaveProceso
 """
 
-QUERYTABLES = r"""
-
-    SELECT UsoLibros.Libro, IIF(ISNULL(Tabla), 'Nulo', Tabla) + '<br>' + UsoLibros.Libro, COUNT(*)
-    FROM UsoLibros INNER JOIN MasterLibros
-    ON UsoLibros.IdDato = MasterLibros.IdDato
-    WHERE UsoLibros.Tipo_Linaje = 'Residencia'
-    AND GranDato = '{0}'
-    GROUP BY GranDato, UsoLibros.Libro, Tabla;
-"""
-
-QUERYFIELDS = r"""
-    SELECT IIF(ISNULL(Tabla), 'Nulo', Tabla) + '<br>' + UsoLibros.Libro, 
-    IIF(ISNULL(Campo), 'Nulo', Campo) + '<br>' 
-        + IIF(ISNULL(Tabla), 'Nulo', Tabla) + '<br>' 
-        + UsoLibros.Libro, COUNT(*)
-    FROM UsoLibros INNER JOIN MasterLibros
-    ON UsoLibros.IdDato = MasterLibros.IdDato
-    WHERE UsoLibros.Tipo_Linaje = 'Residencia'
-    AND GranDato = '{0}'
-    GROUP BY GranDato, UsoLibros.Libro, Tabla, Campo;
+QUERYSUBPROCCESSES = r"""
+    SELECT MasterProcesos.ClaveProceso, 
+        UsoProcesos.ClaveDatoProceso + '<br>' + MasterProcesos.ClaveProceso, 
+        COUNT(*)
+    FROM CatalogoGranDato, MasterProcesos, UsoProcesos
+    WHERE CatalogoGranDato.NombreGranDato = '{0}'
+        AND MasterProcesos.ClaveGrandato = CatalogoGranDato.ClaveGracDato
+        AND MasterProcesos.ClaveDatoProceso = UsoProcesos.ClaveDatoProceso
+    GROUP BY CatalogoGranDato.NombreGranDato,  MasterProcesos.ClaveProceso, UsoProcesos.ClaveDatoProceso
 """
 
 QUERYDROPDOWN = r"""
-    SELECT GranDato
-    FROM UsoLibros INNER JOIN MasterLibros
-    ON UsoLibros.IdDato = MasterLibros.IdDato
-    WHERE UsoLibros.Tipo_Linaje = 'Residencia'
-    GROUP BY GranDato;
+    SELECT DISTINCT CatalogoGranDato.NombreGranDato
+    FROM CatalogoGranDato, MasterProcesos, UsoProcesos
+    WHERE MasterProcesos.ClaveGrandato = CatalogoGranDato.ClaveGracDato
+        AND MasterProcesos.ClaveDatoProceso = UsoProcesos.ClaveDatoProceso
 """
 
 
@@ -184,14 +172,15 @@ class Ui_MainWindow(object):
         bigdata = self.ddlBigData.currentText()
         if (bigdata != 'Selecciona un dato'):
             if (self.circle >= 0):
-                books = self.exec(QUERYBOOKS.format(bigdata))
+                books = self.exec(QUERYPROCCESSES.format(bigdata))
                 parents = [""] + self.getColumn(books, 0)
                 names = [bigdata] + self.getColumn(books, 1)
                 counts = self.getColumn(books, 2)
                 total = self.getTotal(counts)
                 values = [total] + counts
+                title = 'Procesos de {0}'.format(bigdata)
                 if (self.circle >= 1):
-                    tables = self.exec(QUERYTABLES.format(bigdata))
+                    tables = self.exec(QUERYSUBPROCCESSES.format(bigdata))
                     parents = parents + self.getColumn(tables, 0)
                     newValues = self.getColumn(tables, 2)
                     if (self.circle == 1):
@@ -199,19 +188,14 @@ class Ui_MainWindow(object):
                     else:
                         names = names + self.getColumn(tables, 1)
                     values = values + newValues
-                if (self.circle >= 2):
-                    fields = self.exec(QUERYFIELDS.format(bigdata))
-                    parents = parents + self.getColumn(fields, 0)
-                    newValues = self.getColumn(fields, 2)
-                    names = names + self.getPercentages(self.getColumn(fields, 1), newValues, total)
-                    values = values + newValues
+                    title = 'Procesos y subprocesos de {0}'.format(bigdata)
                 fig = go.Figure(go.Sunburst(
                     labels=names,
                     parents=parents,
                     values=values,
                     branchvalues="total",
                 ))
-                self.show(fig, 'Residencia de {0}'.format(bigdata))
+                self.show(fig, title)
 
     def getTotal(self, a):
         output = 0
@@ -232,7 +216,7 @@ class Ui_MainWindow(object):
         self.ddlBigData.addItems(data)
 
     def expand(self):
-        if (self.circle < 2):
+        if (self.circle < 1):
             self.circle += 1
             self.modifyCircles()
 
