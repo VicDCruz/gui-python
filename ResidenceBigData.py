@@ -22,34 +22,40 @@ path = QtCore.QDir.current().filePath('./plotly-latest.min.js')
 local = QtCore.QUrl.fromLocalFile(path).toString()
 
 QUERYBOOKS = r"""
-    SELECT GranDato, UsoLibros.Libro, COUNT(*)
-    FROM UsoLibros INNER JOIN MasterLibros
+    SELECT GranDato, CarLibrosyProcesos.NombreProcesoLibro, COUNT(*)
+    FROM CarLibrosyProcesos, UsoLibros INNER JOIN MasterLibros
     ON UsoLibros.IdDato = MasterLibros.IdDato
     WHERE UsoLibros.Tipo_Linaje = 'Residencia'
     AND GranDato = '{0}'
-    GROUP BY GranDato, UsoLibros.Libro;
+    AND UsoLibros.Libro <> 'MOCPr'
+    AND UsoLibros.Libro = CarLibrosyProcesos.ClaveProcesoLibro
+    GROUP BY GranDato, CarLibrosyProcesos.NombreProcesoLibro;
 """
 
 QUERYTABLES = r"""
 
-    SELECT UsoLibros.Libro, IIF(ISNULL(Tabla), 'Nulo', Tabla) + '<br>' + UsoLibros.Libro, COUNT(*)
-    FROM UsoLibros INNER JOIN MasterLibros
+    SELECT CarLibrosyProcesos.NombreProcesoLibro, IIF(ISNULL(Tabla), 'Nulo', Tabla) + '<br>' + CarLibrosyProcesos.NombreProcesoLibro, COUNT(*)
+    FROM CarLibrosyProcesos, UsoLibros INNER JOIN MasterLibros
     ON UsoLibros.IdDato = MasterLibros.IdDato
     WHERE UsoLibros.Tipo_Linaje = 'Residencia'
     AND GranDato = '{0}'
-    GROUP BY GranDato, UsoLibros.Libro, Tabla;
+    AND UsoLibros.Libro <> 'MOCPr'
+    AND UsoLibros.Libro = CarLibrosyProcesos.ClaveProcesoLibro
+    GROUP BY GranDato, CarLibrosyProcesos.NombreProcesoLibro, Tabla;
 """
 
 QUERYFIELDS = r"""
-    SELECT IIF(ISNULL(Tabla), 'Nulo', Tabla) + '<br>' + UsoLibros.Libro, 
+    SELECT IIF(ISNULL(Tabla), 'Nulo', Tabla) + '<br>' + CarLibrosyProcesos.NombreProcesoLibro, 
     IIF(ISNULL(Campo), 'Nulo', Campo) + '<br>' 
         + IIF(ISNULL(Tabla), 'Nulo', Tabla) + '<br>' 
-        + UsoLibros.Libro, COUNT(*)
-    FROM UsoLibros INNER JOIN MasterLibros
+        + CarLibrosyProcesos.NombreProcesoLibro, COUNT(*)
+    FROM CarLibrosyProcesos, UsoLibros INNER JOIN MasterLibros
     ON UsoLibros.IdDato = MasterLibros.IdDato
     WHERE UsoLibros.Tipo_Linaje = 'Residencia'
     AND GranDato = '{0}'
-    GROUP BY GranDato, UsoLibros.Libro, Tabla, Campo;
+    AND UsoLibros.Libro <> 'MOCPr'
+    AND UsoLibros.Libro = CarLibrosyProcesos.ClaveProcesoLibro
+    GROUP BY GranDato, CarLibrosyProcesos.NombreProcesoLibro, Tabla, Campo;
 """
 
 QUERYDROPDOWN = r"""

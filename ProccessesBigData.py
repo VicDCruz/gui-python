@@ -22,23 +22,25 @@ path = QtCore.QDir.current().filePath('./plotly-latest.min.js')
 local = QtCore.QUrl.fromLocalFile(path).toString()
 
 QUERYPROCCESSES = r"""
-    SELECT CatalogoGranDato.NombreGranDato, MasterProcesos.ClaveProceso, COUNT(*)
-    FROM CatalogoGranDato, MasterProcesos, UsoProcesos
+    SELECT CatalogoGranDato.NombreGranDato, CarLibrosyProcesos.NombreProcesoLibro, COUNT(*)
+    FROM CatalogoGranDato, MasterProcesos, UsoProcesos, CarLibrosyProcesos
     WHERE CatalogoGranDato.NombreGranDato = '{0}'
         AND MasterProcesos.ClaveGrandato = CatalogoGranDato.ClaveGracDato
         AND MasterProcesos.ClaveDatoProceso = UsoProcesos.ClaveDatoProceso
-    GROUP BY CatalogoGranDato.NombreGranDato, MasterProcesos.ClaveProceso
+        AND MasterProcesos.ClaveProceso = CarLibrosyProcesos.ClaveProcesoLibro
+    GROUP BY CatalogoGranDato.NombreGranDato, CarLibrosyProcesos.NombreProcesoLibro
 """
 
 QUERYSUBPROCCESSES = r"""
-    SELECT MasterProcesos.ClaveProceso, 
-        UsoProcesos.ClaveDatoProceso + '<br>' + MasterProcesos.ClaveProceso, 
+    SELECT CarLibrosyProcesos.NombreProcesoLibro, 
+        UsoProcesos.Documento + '<br>' + CarLibrosyProcesos.NombreProcesoLibro, 
         COUNT(*)
-    FROM CatalogoGranDato, MasterProcesos, UsoProcesos
+    FROM CatalogoGranDato, MasterProcesos, UsoProcesos, CarLibrosyProcesos
     WHERE CatalogoGranDato.NombreGranDato = '{0}'
         AND MasterProcesos.ClaveGrandato = CatalogoGranDato.ClaveGracDato
         AND MasterProcesos.ClaveDatoProceso = UsoProcesos.ClaveDatoProceso
-    GROUP BY CatalogoGranDato.NombreGranDato,  MasterProcesos.ClaveProceso, UsoProcesos.ClaveDatoProceso
+        AND MasterProcesos.ClaveProceso = CarLibrosyProcesos.ClaveProcesoLibro
+    GROUP BY CatalogoGranDato.NombreGranDato,  CarLibrosyProcesos.NombreProcesoLibro, UsoProcesos.Documento
 """
 
 QUERYDROPDOWN = r"""
@@ -188,7 +190,7 @@ class Ui_MainWindow(object):
                     else:
                         names = names + self.getColumn(tables, 1)
                     values = values + newValues
-                    title = 'Procesos y subprocesos de {0}'.format(bigdata)
+                    title = 'Procesos y documentos de {0}'.format(bigdata)
                 fig = go.Figure(go.Sunburst(
                     labels=names,
                     parents=parents,
