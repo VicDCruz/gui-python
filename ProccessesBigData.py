@@ -21,7 +21,7 @@ sys.argv.append("--disable-web-security")
 path = QtCore.QDir.current().filePath('./plotly-latest.min.js')
 local = QtCore.QUrl.fromLocalFile(path).toString()
 
-QUERYPROCCESSES = r"""
+QUERYPROCESSES = r"""
     SELECT CatalogoGranDato.NombreGranDato, CarLibrosyProcesos.NombreProcesoLibro, COUNT(*)
     FROM CatalogoGranDato, MasterProcesos, UsoProcesos, CarLibrosyProcesos
     WHERE CatalogoGranDato.NombreGranDato = '{0}'
@@ -31,7 +31,7 @@ QUERYPROCCESSES = r"""
     GROUP BY CatalogoGranDato.NombreGranDato, CarLibrosyProcesos.NombreProcesoLibro
 """
 
-QUERYSUBPROCCESSES = r"""
+QUERYSUBPROCESSES = r"""
     SELECT CarLibrosyProcesos.NombreProcesoLibro, 
         UsoProcesos.Documento + '<br>' + CarLibrosyProcesos.NombreProcesoLibro, 
         COUNT(*)
@@ -174,15 +174,15 @@ class Ui_MainWindow(object):
         bigdata = self.ddlBigData.currentText()
         if (bigdata != 'Selecciona un dato'):
             if (self.circle >= 0):
-                books = self.exec(QUERYPROCCESSES.format(bigdata))
-                parents = [""] + self.getColumn(books, 0)
-                names = [bigdata] + self.getColumn(books, 1)
-                counts = self.getColumn(books, 2)
+                processes = self.exec(QUERYPROCESSES.format(bigdata))
+                parents = [""] + self.getColumn(processes, 0)
+                names = [bigdata] + self.getColumn(processes, 1)
+                counts = self.getColumn(processes, 2)
                 total = self.getTotal(counts)
                 values = [total] + counts
                 title = 'Procesos de {0}'.format(bigdata)
                 if (self.circle >= 1):
-                    tables = self.exec(QUERYSUBPROCCESSES.format(bigdata))
+                    tables = self.exec(QUERYSUBPROCESSES.format(bigdata))
                     parents = parents + self.getColumn(tables, 0)
                     newValues = self.getColumn(tables, 2)
                     if (self.circle == 1):
