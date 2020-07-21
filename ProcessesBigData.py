@@ -107,8 +107,8 @@ class Ui_MainWindow(object):
         self.ddlBigData.currentTextChanged.connect(
             self.populateDashboard)
         self.show()
-        self.retranslateUi(MainWindow)
         self.circle = 0
+        self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
