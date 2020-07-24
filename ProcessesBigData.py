@@ -51,7 +51,7 @@ QUERYDROPDOWN = r"""
 """
 
 
-class Ui_MainWindow(object):
+class ProcessesBigData(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(800, 600)
@@ -99,6 +99,55 @@ class Ui_MainWindow(object):
         self.statusbar.setObjectName("statusbar")
         MainWindow.setStatusBar(self.statusbar)
 
+        self.menuMenu = QtWidgets.QMenu(self.menubar)
+        self.menuMenu.setObjectName("menuMenu")
+        MainWindow.setMenuBar(self.menubar)
+        self.actionInicio = QtWidgets.QAction(MainWindow)
+        self.actionInicio.setObjectName("actionInicio")
+        self.actionInicio.triggered.connect(self.toMenu)
+        self.actionConsulta = QtWidgets.QAction(MainWindow)
+        self.actionConsulta.setObjectName("actionConsulta")
+        self.actionConsulta.triggered.connect(self.toGraph)
+        self.actionBusqueda = QtWidgets.QAction(MainWindow)
+        self.actionBusqueda.setObjectName("actionBusqueda")
+        self.actionBusqueda.triggered.connect(self.toSearchByWord)
+        self.actionDatoRegulado = QtWidgets.QAction(MainWindow)
+        self.actionDatoRegulado.setObjectName("actionDatoRegulado")
+        self.actionDatoRegulado.triggered.connect(self.toRegulatedData)
+        self.actionDashboard = QtWidgets.QAction(MainWindow)
+        self.actionDashboard.setObjectName("actionDashboard")
+        self.actionDashboard.triggered.connect(self.toDashboard)
+        self.actionAllData = QtWidgets.QAction(MainWindow)
+        self.actionAllData.setObjectName("actionAllData")
+        self.actionAllData.triggered.connect(self.toAllData)
+        self.actionResidenceBigData = QtWidgets.QAction(MainWindow)
+        self.actionResidenceBigData.setObjectName("actionResidenceBigData")
+        self.actionResidenceBigData.triggered.connect(self.toResidenceBigData)
+        self.actionProcessesBigData = QtWidgets.QAction(MainWindow)
+        self.actionProcessesBigData.setObjectName("actionProcessesBigData")
+        self.actionProcessesBigData.triggered.connect(self.toProcessesBigData)
+        self.actionResidenceAndProcessesBigData = QtWidgets.QAction(MainWindow)
+        self.actionResidenceAndProcessesBigData.setObjectName(
+            "actionResidenceAndProcessesBigData")
+        self.actionResidenceAndProcessesBigData.triggered.connect(
+            self.toResidenceAndProcessesBigData)
+        self.actionDataInventary = QtWidgets.QAction(MainWindow)
+        self.actionDataInventary.setObjectName("actionDataInventary")
+        self.actionDataInventary.triggered.connect(self.toDataInventary)
+
+        self.menuMenu.addAction(self.actionInicio)
+        self.menuMenu.addSeparator()
+        self.menuMenu.addAction(self.actionConsulta)
+        self.menuMenu.addAction(self.actionBusqueda)
+        self.menuMenu.addAction(self.actionDatoRegulado)
+        self.menuMenu.addAction(self.actionDashboard)
+        self.menuMenu.addAction(self.actionAllData)
+        self.menuMenu.addAction(self.actionResidenceBigData)
+        self.menuMenu.addAction(self.actionProcessesBigData)
+        self.menuMenu.addAction(self.actionResidenceAndProcessesBigData)
+        self.menuMenu.addAction(self.actionDataInventary)
+        self.menubar.addAction(self.menuMenu.menuAction())
+
         self.startLog()
         self.connectToDb()
         self.btnContract.clicked.connect(self.contract)
@@ -117,6 +166,22 @@ class Ui_MainWindow(object):
         self.btnExpand.setText(_translate("MainWindow", "Expandir"))
         self.btnContract.setText(_translate("MainWindow", "Contraer"))
         self.label.setText(_translate("MainWindow", "Gran Dato"))
+        self.menuMenu.setTitle(_translate("MainWindow", "Menu"))
+        self.actionInicio.setText(_translate("MainWindow", "Inicio"))
+        self.actionConsulta.setText(_translate("MainWindow", "Gráficas"))
+        self.actionBusqueda.setText(_translate("MainWindow", "Búsqueda"))
+        self.actionDatoRegulado.setText(
+            _translate("MainWindow", "Dato Regulado"))
+        self.actionDashboard.setText(_translate("MainWindow", "Dashboard"))
+        self.actionAllData.setText(_translate("MainWindow", "Multifiltros"))
+        self.actionResidenceBigData.setText(
+            _translate("MainWindow", "Residencia por Gran Dato"))
+        self.actionProcessesBigData.setText(
+            _translate("MainWindow", "Procesos por Gran dato"))
+        self.actionResidenceAndProcessesBigData.setText(
+            _translate("MainWindow", "Residencia y Procesos por Gran Dato"))
+        self.actionDataInventary.setText(
+            _translate("MainWindow", "Inventario de Datos"))
 
     def connectToDb(self):
         self.logger.info("Connection to DB")
@@ -186,7 +251,9 @@ class Ui_MainWindow(object):
                     parents = parents + self.getColumn(tables, 0)
                     newValues = self.getColumn(tables, 2)
                     if (self.circle == 1):
-                        names = names + self.getPercentages(self.getColumn(tables, 1), newValues, total)
+                        names = names + \
+                            self.getPercentages(self.getColumn(
+                                tables, 1), newValues, total)
                     else:
                         names = names + self.getColumn(tables, 1)
                     values = values + newValues
@@ -227,12 +294,27 @@ class Ui_MainWindow(object):
             self.circle -= 1
             self.modifyCircles()
 
+    def setOptionsMenu(self, toMenu, toRegulatedData, toGraph, toSearchByWord,
+                       toDashboard, toAllData, toResidenceBigData,
+                       toProcessesBigData, toResidenceAndProcessesBigData,
+                       toDataInventary):
+        self.toMenu = toMenu
+        self.toRegulatedData = toRegulatedData
+        self.toGraph = toGraph
+        self.toSearchByWord = toSearchByWord
+        self.toDashboard = toDashboard
+        self.toAllData = toAllData
+        self.toResidenceBigData = toResidenceBigData
+        self.toProcessesBigData = toProcessesBigData
+        self.toResidenceAndProcessesBigData = toResidenceAndProcessesBigData
+        self.toDataInventary = toDataInventary
+
 
 if __name__ == "__main__":
     import sys
     app = QtWidgets.QApplication(sys.argv)
     MainWindow = QtWidgets.QMainWindow()
-    ui = Ui_MainWindow()
+    ui = ProcessesBigData()
     ui.setupUi(MainWindow)
     MainWindow.show()
     sys.exit(app.exec_())

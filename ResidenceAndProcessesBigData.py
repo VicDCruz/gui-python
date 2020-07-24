@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file '.\ResidenceBigData.ui'
+# Form implementation generated from reading ui file '.\ResidenceAndProcessesBigData.ui'
 #
 # Created by: PyQt5 UI code generator 5.9.2
 #
@@ -13,6 +13,7 @@ import pyodbc
 import logging
 import plotly
 import plotly.graph_objs as go
+from plotly.subplots import make_subplots
 import numbers
 
 LOG_FORMAT = "%(levelname)s %(asctime)s - %(message)s"
@@ -20,6 +21,28 @@ LOG_FORMAT = "%(levelname)s %(asctime)s - %(message)s"
 sys.argv.append("--disable-web-security")
 path = QtCore.QDir.current().filePath('./plotly-latest.min.js')
 local = QtCore.QUrl.fromLocalFile(path).toString()
+
+QUERYPROCESSES = r"""
+    SELECT CatalogoGranDato.NombreGranDato, CarLibrosyProcesos.NombreProcesoLibro, COUNT(*)
+    FROM CatalogoGranDato, MasterProcesos, UsoProcesos, CarLibrosyProcesos
+    WHERE CatalogoGranDato.NombreGranDato = '{0}'
+        AND MasterProcesos.ClaveGrandato = CatalogoGranDato.ClaveGracDato
+        AND MasterProcesos.ClaveDatoProceso = UsoProcesos.ClaveDatoProceso
+        AND MasterProcesos.ClaveProceso = CarLibrosyProcesos.ClaveProcesoLibro
+    GROUP BY CatalogoGranDato.NombreGranDato, CarLibrosyProcesos.NombreProcesoLibro
+"""
+
+QUERYSUBPROCESSES = r"""
+    SELECT CarLibrosyProcesos.NombreProcesoLibro,
+        UsoProcesos.Documento + '<br>' + CarLibrosyProcesos.NombreProcesoLibro,
+        COUNT(*)
+    FROM CatalogoGranDato, MasterProcesos, UsoProcesos, CarLibrosyProcesos
+    WHERE CatalogoGranDato.NombreGranDato = '{0}'
+        AND MasterProcesos.ClaveGrandato = CatalogoGranDato.ClaveGracDato
+        AND MasterProcesos.ClaveDatoProceso = UsoProcesos.ClaveDatoProceso
+        AND MasterProcesos.ClaveProceso = CarLibrosyProcesos.ClaveProcesoLibro
+    GROUP BY CatalogoGranDato.NombreGranDato,  CarLibrosyProcesos.NombreProcesoLibro, UsoProcesos.Documento
+"""
 
 QUERYBOOKS = r"""
     SELECT GranDato, CarLibrosyProcesos.NombreProcesoLibro, COUNT(*)
@@ -45,9 +68,9 @@ QUERYTABLES = r"""
 """
 
 QUERYFIELDS = r"""
-    SELECT IIF(ISNULL(Tabla), 'Nulo', Tabla) + '<br>' + CarLibrosyProcesos.NombreProcesoLibro, 
-    IIF(ISNULL(Campo), 'Nulo', Campo) + '<br>' 
-        + IIF(ISNULL(Tabla), 'Nulo', Tabla) + '<br>' 
+    SELECT IIF(ISNULL(Tabla), 'Nulo', Tabla) + '<br>' + CarLibrosyProcesos.NombreProcesoLibro,
+    IIF(ISNULL(Campo), 'Nulo', Campo) + '<br>'
+        + IIF(ISNULL(Tabla), 'Nulo', Tabla) + '<br>'
         + CarLibrosyProcesos.NombreProcesoLibro, COUNT(*)
     FROM CarLibrosyProcesos, UsoLibros INNER JOIN MasterLibros
     ON UsoLibros.IdDato = MasterLibros.IdDato
@@ -58,16 +81,16 @@ QUERYFIELDS = r"""
     GROUP BY GranDato, CarLibrosyProcesos.NombreProcesoLibro, Tabla, Campo;
 """
 
+# TODO: Union entre Procesos y Libros
 QUERYDROPDOWN = r"""
-    SELECT GranDato
-    FROM UsoLibros INNER JOIN MasterLibros
-    ON UsoLibros.IdDato = MasterLibros.IdDato
-    WHERE UsoLibros.Tipo_Linaje = 'Residencia'
-    GROUP BY GranDato;
+    SELECT DISTINCT CatalogoGranDato.NombreGranDato
+    FROM CatalogoGranDato, MasterProcesos, UsoProcesos
+    WHERE MasterProcesos.ClaveGrandato = CatalogoGranDato.ClaveGracDato
+        AND MasterProcesos.ClaveDatoProceso = UsoProcesos.ClaveDatoProceso
 """
 
 
-class ResidenceBigData(object):
+class ResidenceAndProcessesBigData(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(800, 600)
@@ -75,24 +98,20 @@ class ResidenceBigData(object):
         self.centralwidget.setObjectName("centralwidget")
         self.gridLayout = QtWidgets.QGridLayout(self.centralwidget)
         self.gridLayout.setObjectName("gridLayout")
-        self.btnExpand = QtWidgets.QPushButton(self.centralwidget)
-        self.btnExpand.setMinimumSize(QtCore.QSize(350, 0))
-        self.btnExpand.setObjectName("btnExpand")
-        self.gridLayout.addWidget(self.btnExpand, 2, 1, 1, 1)
-        self.btnContract = QtWidgets.QPushButton(self.centralwidget)
+        self.btnExpandProcesses = QtWidgets.QPushButton(self.centralwidget)
+        self.btnExpandProcesses.setMinimumSize(QtCore.QSize(350, 0))
+        self.btnExpandProcesses.setObjectName("btnExpandProcesses")
+        self.gridLayout.addWidget(self.btnExpandProcesses, 2, 1, 1, 1)
+        self.btnContractProcesses = QtWidgets.QPushButton(self.centralwidget)
         sizePolicy = QtWidgets.QSizePolicy(
             QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(
-            self.btnContract.sizePolicy().hasHeightForWidth())
-        self.btnContract.setSizePolicy(sizePolicy)
-        self.btnContract.setObjectName("btnContract")
-        self.gridLayout.addWidget(self.btnContract, 2, 2, 1, 1)
-        self.graph = QtWebEngineWidgets.QWebEngineView(self.centralwidget)
-        self.graph.setUrl(QtCore.QUrl("about:blank"))
-        self.graph.setObjectName("graph")
-        self.gridLayout.addWidget(self.graph, 1, 0, 1, 3)
+            self.btnContractProcesses.sizePolicy().hasHeightForWidth())
+        self.btnContractProcesses.setSizePolicy(sizePolicy)
+        self.btnContractProcesses.setObjectName("btnContractProcesses")
+        self.gridLayout.addWidget(self.btnContractProcesses, 2, 2, 1, 1)
         self.label = QtWidgets.QLabel(self.centralwidget)
         sizePolicy = QtWidgets.QSizePolicy(
             QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Preferred)
@@ -103,9 +122,25 @@ class ResidenceBigData(object):
         self.label.setSizePolicy(sizePolicy)
         self.label.setObjectName("label")
         self.gridLayout.addWidget(self.label, 0, 0, 1, 1)
+        self.graph = QtWebEngineWidgets.QWebEngineView(self.centralwidget)
+        self.graph.setUrl(QtCore.QUrl("about:blank"))
+        self.graph.setObjectName("graph")
+        self.gridLayout.addWidget(self.graph, 1, 0, 1, 3)
         self.ddlBigData = QtWidgets.QComboBox(self.centralwidget)
         self.ddlBigData.setObjectName("ddlBigData")
         self.gridLayout.addWidget(self.ddlBigData, 0, 1, 1, 2)
+        self.label_2 = QtWidgets.QLabel(self.centralwidget)
+        self.label_2.setObjectName("label_2")
+        self.gridLayout.addWidget(self.label_2, 2, 0, 1, 1)
+        self.label_3 = QtWidgets.QLabel(self.centralwidget)
+        self.label_3.setObjectName("label_3")
+        self.gridLayout.addWidget(self.label_3, 3, 0, 1, 1)
+        self.btnExpandBooks = QtWidgets.QPushButton(self.centralwidget)
+        self.btnExpandBooks.setObjectName("btnExpandBooks")
+        self.gridLayout.addWidget(self.btnExpandBooks, 3, 1, 1, 1)
+        self.btnContractBooks = QtWidgets.QPushButton(self.centralwidget)
+        self.btnContractBooks.setObjectName("btnContractBooks")
+        self.gridLayout.addWidget(self.btnContractBooks, 3, 2, 1, 1)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 800, 26))
@@ -166,22 +201,29 @@ class ResidenceBigData(object):
 
         self.startLog()
         self.connectToDb()
-        self.btnContract.clicked.connect(self.contract)
-        self.btnExpand.clicked.connect(self.expand)
+        self.btnContractProcesses.clicked.connect(self.contractProcesses)
+        self.btnExpandProcesses.clicked.connect(self.expandProcesses)
+        self.btnContractBooks.clicked.connect(self.contractBooks)
+        self.btnExpandBooks.clicked.connect(self.expandBooks)
         self.populateDropDown()
         self.ddlBigData.currentTextChanged.connect(
             self.populateDashboard)
         self.show()
+        self.circleProcesses = 0
+        self.circleBooks = 0
         self.retranslateUi(MainWindow)
-        self.circle = 0
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
-        self.btnExpand.setText(_translate("MainWindow", "Expandir"))
-        self.btnContract.setText(_translate("MainWindow", "Contraer"))
-        self.label.setText(_translate("MainWindow", "Gran Dato"))
+        self.btnExpandProcesses.setText(_translate("MainWindow", "Expandir"))
+        self.btnContractProcesses.setText(_translate("MainWindow", "Contraer"))
+        self.label.setText(_translate("MainWindow", "Gran dato"))
+        self.label_2.setText(_translate("MainWindow", "Procesos"))
+        self.label_3.setText(_translate("MainWindow", "Libros"))
+        self.btnExpandBooks.setText(_translate("MainWindow", "Expandir"))
+        self.btnContractBooks.setText(_translate("MainWindow", "Contraer"))
         self.menuMenu.setTitle(_translate("MainWindow", "Menu"))
         self.actionInicio.setText(_translate("MainWindow", "Inicio"))
         self.actionConsulta.setText(_translate("MainWindow", "Gráficas"))
@@ -248,31 +290,128 @@ class ResidenceBigData(object):
         return output
 
     def populateDashboard(self):
-        self.circle = 0
+        self.circleProcesses = 0
+        self.circleBooks = 0
         self.modifyCircles()
 
     def modifyCircles(self):
         bigdata = self.ddlBigData.currentText()
         if (bigdata != 'Selecciona un dato'):
-            if (self.circle >= 0):
-                books = self.exec(QUERYBOOKS.format(bigdata))
-                parents = [""] + self.getColumn(books, 0)
-                names = [bigdata] + self.getColumn(books, 1)
-                counts = self.getColumn(books, 2)
+            fig = make_subplots(rows=1, cols=2, specs=[
+                [{'type': 'domain'}, {'type': 'domain'}]])
+            title = 'Procesos y libros de {0}'.format(bigdata)
+            if (self.circleProcesses >= 0):
+                processes = self.exec(QUERYPROCESSES.format(bigdata))
+                parents = [""] + self.getColumn(processes, 0)
+                names = [bigdata] + self.getColumn(processes, 1)
+                counts = self.getColumn(processes, 2)
                 total = self.getTotal(counts)
                 values = [total] + counts
-                if (self.circle >= 1):
-                    tables = self.exec(QUERYTABLES.format(bigdata))
+                if (self.circleProcesses >= 1):
+                    tables = self.exec(QUERYSUBPROCESSES.format(bigdata))
                     parents = parents + self.getColumn(tables, 0)
                     newValues = self.getColumn(tables, 2)
-                    if (self.circle == 1):
+                    if (self.circleProcesses == 1):
                         names = names + \
                             self.getPercentages(self.getColumn(
                                 tables, 1), newValues, total)
                     else:
                         names = names + self.getColumn(tables, 1)
                     values = values + newValues
-                if (self.circle >= 2):
+                fig.add_trace(go.Sunburst(
+                    labels=names,
+                    parents=parents,
+                    values=values,
+                    branchvalues="total",
+                ), 1, 1)
+            bigdata = self.ddlBigData.currentText()
+            if (self.circleBooks >= 0):
+                books = self.exec(QUERYBOOKS.format(bigdata))
+                parents = [""] + self.getColumn(books, 0)
+                names = [bigdata] + self.getColumn(books, 1)
+                counts = self.getColumn(books, 2)
+                total = self.getTotal(counts)
+                values = [total] + counts
+                if (self.circleBooks >= 1):
+                    tables = self.exec(QUERYTABLES.format(bigdata))
+                    parents = parents + self.getColumn(tables, 0)
+                    newValues = self.getColumn(tables, 2)
+                    if (self.circleBooks == 1):
+                        names = names + \
+                            self.getPercentages(self.getColumn(
+                                tables, 1), newValues, total)
+                    else:
+                        names = names + self.getColumn(tables, 1)
+                    values = values + newValues
+                if (self.circleBooks >= 2):
+                    fields = self.exec(QUERYFIELDS.format(bigdata))
+                    parents = parents + self.getColumn(fields, 0)
+                    newValues = self.getColumn(fields, 2)
+                    names = names + \
+                        self.getPercentages(self.getColumn(
+                            fields, 1), newValues, total)
+                    values = values + newValues
+                fig.add_trace(go.Sunburst(
+                    labels=names,
+                    parents=parents,
+                    values=values,
+                    branchvalues="total",
+                ), 1, 2)
+            self.show(fig, title)
+
+    def modifyCirclesProcesses(self):
+        bigdata = self.ddlBigData.currentText()
+        if (bigdata != 'Selecciona un dato'):
+            if (self.circleProcesses >= 0):
+                processes = self.exec(QUERYPROCESSES.format(bigdata))
+                parents = [""] + self.getColumn(processes, 0)
+                names = [bigdata] + self.getColumn(processes, 1)
+                counts = self.getColumn(processes, 2)
+                total = self.getTotal(counts)
+                values = [total] + counts
+                title = 'Procesos de {0}'.format(bigdata)
+                if (self.circleProcesses >= 1):
+                    tables = self.exec(QUERYSUBPROCESSES.format(bigdata))
+                    parents = parents + self.getColumn(tables, 0)
+                    newValues = self.getColumn(tables, 2)
+                    if (self.circleProcesses == 1):
+                        names = names + \
+                            self.getPercentages(self.getColumn(
+                                tables, 1), newValues, total)
+                    else:
+                        names = names + self.getColumn(tables, 1)
+                    values = values + newValues
+                    title = 'Procesos y documentos de {0}'.format(bigdata)
+                fig = go.Figure(go.Sunburst(
+                    labels=names,
+                    parents=parents,
+                    values=values,
+                    branchvalues="total",
+                ))
+                self.show(fig, title)
+
+    def modifyCirclesBooks(self):
+        bigdata = self.ddlBigData.currentText()
+        if (bigdata != 'Selecciona un dato'):
+            if (self.circleBooks >= 0):
+                books = self.exec(QUERYBOOKS.format(bigdata))
+                parents = [""] + self.getColumn(books, 0)
+                names = [bigdata] + self.getColumn(books, 1)
+                counts = self.getColumn(books, 2)
+                total = self.getTotal(counts)
+                values = [total] + counts
+                if (self.circleBooks >= 1):
+                    tables = self.exec(QUERYTABLES.format(bigdata))
+                    parents = parents + self.getColumn(tables, 0)
+                    newValues = self.getColumn(tables, 2)
+                    if (self.circleBooks == 1):
+                        names = names + \
+                            self.getPercentages(self.getColumn(
+                                tables, 1), newValues, total)
+                    else:
+                        names = names + self.getColumn(tables, 1)
+                    values = values + newValues
+                if (self.circleBooks >= 2):
                     fields = self.exec(QUERYFIELDS.format(bigdata))
                     parents = parents + self.getColumn(fields, 0)
                     newValues = self.getColumn(fields, 2)
@@ -306,15 +445,25 @@ class ResidenceBigData(object):
         data.insert(0, 'Selecciona un dato')
         self.ddlBigData.addItems(data)
 
-    def expand(self):
-        if (self.circle < 2):
-            self.circle += 1
-            self.modifyCircles()
+    def expandProcesses(self):
+        if (self.circleProcesses < 1):
+            self.circleProcesses += 1
+            self.modifyCirclesProcesses()
 
-    def contract(self):
-        if (self.circle > 0):
-            self.circle -= 1
-            self.modifyCircles()
+    def contractProcesses(self):
+        if (self.circleProcesses > 0):
+            self.circleProcesses -= 1
+            self.modifyCirclesProcesses()
+
+    def expandBooks(self):
+        if (self.circleBooks < 2):
+            self.circleBooks += 1
+            self.modifyCirclesBooks()
+
+    def contractBooks(self):
+        if (self.circleBooks > 0):
+            self.circleBooks -= 1
+            self.modifyCirclesBooks()
 
     def setOptionsMenu(self, toMenu, toRegulatedData, toGraph, toSearchByWord,
                        toDashboard, toAllData, toResidenceBigData,
@@ -336,7 +485,7 @@ if __name__ == "__main__":
     import sys
     app = QtWidgets.QApplication(sys.argv)
     MainWindow = QtWidgets.QMainWindow()
-    ui = ResidenceBigData()
+    ui = ResidenceAndProcessesBigData()
     ui.setupUi(MainWindow)
     MainWindow.show()
     sys.exit(app.exec_())

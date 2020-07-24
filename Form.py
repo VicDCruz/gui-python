@@ -152,30 +152,48 @@ class Form(object):
         MainWindow.setStatusBar(self.statusbar)
         self.actionInicio = QtWidgets.QAction(MainWindow)
         self.actionInicio.setObjectName("actionInicio")
-        if (self.toMenu is not None):
-            self.actionInicio.triggered.connect(self.toMenu)
+        self.actionInicio.triggered.connect(self.toMenu)
         self.actionConsulta = QtWidgets.QAction(MainWindow)
         self.actionConsulta.setObjectName("actionConsulta")
-        if (self.toGraph is not None):
-            self.actionConsulta.triggered.connect(self.toGraph)
+        self.actionConsulta.triggered.connect(self.toGraph)
         self.actionBusqueda = QtWidgets.QAction(MainWindow)
         self.actionBusqueda.setObjectName("actionBusqueda")
-        if (self.toSearchByWord is not None):
-            self.actionBusqueda.triggered.connect(self.toSearchByWord)
+        self.actionBusqueda.triggered.connect(self.toSearchByWord)
         self.actionDatoRegulado = QtWidgets.QAction(MainWindow)
         self.actionDatoRegulado.setObjectName("actionDatoRegulado")
-        if (self.toRegulatedData is not None):
-            self.actionDatoRegulado.triggered.connect(self.toRegulatedData)
+        self.actionDatoRegulado.triggered.connect(self.toRegulatedData)
         self.actionDashboard = QtWidgets.QAction(MainWindow)
         self.actionDashboard.setObjectName("actionDashboard")
-        if (self.toDashboard is not None):
-            self.actionDashboard.triggered.connect(self.toDashboard)
+        self.actionDashboard.triggered.connect(self.toDashboard)
+        self.actionAllData = QtWidgets.QAction(MainWindow)
+        self.actionAllData.setObjectName("actionAllData")
+        self.actionAllData.triggered.connect(self.toAllData)
+        self.actionResidenceBigData = QtWidgets.QAction(MainWindow)
+        self.actionResidenceBigData.setObjectName("actionResidenceBigData")
+        self.actionResidenceBigData.triggered.connect(self.toResidenceBigData)
+        self.actionProcessesBigData = QtWidgets.QAction(MainWindow)
+        self.actionProcessesBigData.setObjectName("actionProcessesBigData")
+        self.actionProcessesBigData.triggered.connect(self.toProcessesBigData)
+        self.actionResidenceAndProcessesBigData = QtWidgets.QAction(MainWindow)
+        self.actionResidenceAndProcessesBigData.setObjectName(
+            "actionResidenceAndProcessesBigData")
+        self.actionResidenceAndProcessesBigData.triggered.connect(
+            self.toResidenceAndProcessesBigData)
+        self.actionDataInventary = QtWidgets.QAction(MainWindow)
+        self.actionDataInventary.setObjectName("actionDataInventary")
+        self.actionDataInventary.triggered.connect(self.toDataInventary)
+
         self.menuMenu.addAction(self.actionInicio)
         self.menuMenu.addSeparator()
         self.menuMenu.addAction(self.actionConsulta)
         self.menuMenu.addAction(self.actionBusqueda)
         self.menuMenu.addAction(self.actionDatoRegulado)
         self.menuMenu.addAction(self.actionDashboard)
+        self.menuMenu.addAction(self.actionAllData)
+        self.menuMenu.addAction(self.actionResidenceBigData)
+        self.menuMenu.addAction(self.actionProcessesBigData)
+        self.menuMenu.addAction(self.actionResidenceAndProcessesBigData)
+        self.menuMenu.addAction(self.actionDataInventary)
         self.menubar.addAction(self.menuMenu.menuAction())
 
         self.MainWindow = MainWindow
@@ -210,15 +228,32 @@ class Form(object):
         self.actionConsulta.setText(_translate("MainWindow", "Gráficas"))
         self.actionBusqueda.setText(_translate("MainWindow", "Búsqueda"))
         self.actionDatoRegulado.setText(
-            _translate("MainWindow", "DatoRegulado"))
+            _translate("MainWindow", "Dato Regulado"))
         self.actionDashboard.setText(_translate("MainWindow", "Dashboard"))
+        self.actionAllData.setText(_translate("MainWindow", "Multifiltros"))
+        self.actionResidenceBigData.setText(
+            _translate("MainWindow", "Residencia por Gran Dato"))
+        self.actionProcessesBigData.setText(
+            _translate("MainWindow", "Procesos por Gran dato"))
+        self.actionResidenceAndProcessesBigData.setText(
+            _translate("MainWindow", "Residencia y Procesos por Gran Dato"))
+        self.actionDataInventary.setText(
+            _translate("MainWindow", "Inventario de Datos"))
 
-    def setOptionsMenu(self, toMenu, toRegulatedData, toGraph, toSearchByWord, toDashboard):
+    def setOptionsMenu(self, toMenu, toRegulatedData, toGraph, toSearchByWord,
+                       toDashboard, toAllData, toResidenceBigData,
+                       toProcessesBigData, toResidenceAndProcessesBigData,
+                       toDataInventary):
         self.toMenu = toMenu
         self.toRegulatedData = toRegulatedData
         self.toGraph = toGraph
         self.toSearchByWord = toSearchByWord
         self.toDashboard = toDashboard
+        self.toAllData = toAllData
+        self.toResidenceBigData = toResidenceBigData
+        self.toProcessesBigData = toProcessesBigData
+        self.toResidenceAndProcessesBigData = toResidenceAndProcessesBigData
+        self.toDataInventary = toDataInventary
 
     def setByProcess(self):
         query = r"{CALL qryConsultaporTextoListaDatoUsoProceso(?)}"

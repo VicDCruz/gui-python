@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file '.\RegulatedData.ui'
+# Form implementation generated from reading ui file '.\DataInventary.ui'
 #
 # Created by: PyQt5 UI code generator 5.9.2
 #
@@ -13,16 +13,14 @@ import logging
 LOG_FORMAT = "%(levelname)s %(asctime)s - %(message)s"
 
 
-class RegulatedData(object):
+class DataInventary(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(800, 600)
+        MainWindow.resize(800, 800)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
-        self.verticalLayout = QtWidgets.QVBoxLayout(self.centralwidget)
-        self.verticalLayout.setObjectName("verticalLayout")
-        self.horizontalLayout = QtWidgets.QHBoxLayout()
-        self.horizontalLayout.setObjectName("horizontalLayout")
+        self.gridLayout = QtWidgets.QGridLayout(self.centralwidget)
+        self.gridLayout.setObjectName("gridLayout")
         self.label = QtWidgets.QLabel(self.centralwidget)
         sizePolicy = QtWidgets.QSizePolicy(
             QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Preferred)
@@ -32,35 +30,23 @@ class RegulatedData(object):
             self.label.sizePolicy().hasHeightForWidth())
         self.label.setSizePolicy(sizePolicy)
         self.label.setObjectName("label")
-        self.horizontalLayout.addWidget(self.label)
+        self.gridLayout.addWidget(self.label, 0, 0, 1, 1)
+
+        self.btnClean = QtWidgets.QPushButton(self.centralwidget)
+        self.btnClean.setObjectName("btnClean")
+        self.gridLayout.addWidget(self.btnClean, 2, 0, 1, 1)
+
         self.ddlValues = QtWidgets.QComboBox(self.centralwidget)
         self.ddlValues.setObjectName("ddlValues")
-        self.horizontalLayout.addWidget(self.ddlValues)
-        self.verticalLayout.addLayout(self.horizontalLayout)
-        self.tabWidget = QtWidgets.QTabWidget(self.centralwidget)
-        self.tabWidget.setObjectName("tabWidget")
-        self.tabInformation = QtWidgets.QWidget()
-        self.tabInformation.setObjectName("tabInformation")
-        self.horizontalLayout_2 = QtWidgets.QHBoxLayout(self.tabInformation)
-        self.horizontalLayout_2.setObjectName("horizontalLayout_2")
-        self.txtInformation = QtWidgets.QTextEdit(self.tabInformation)
-        self.txtInformation.setObjectName("txtInformation")
-        self.horizontalLayout_2.addWidget(self.txtInformation)
-        self.tabWidget.addTab(self.tabInformation, "")
-        self.tabUse = QtWidgets.QWidget()
-        self.tabUse.setObjectName("tabUse")
-        self.verticalLayout_2 = QtWidgets.QVBoxLayout(self.tabUse)
-        self.verticalLayout_2.setObjectName("verticalLayout_2")
-        self.txtUse = QtWidgets.QTableWidget(self.tabUse)
+        self.gridLayout.addWidget(self.ddlValues, 0, 1, 1, 1)
+        self.txtUse = QtWidgets.QTableWidget(self.centralwidget)
         self.txtUse.setObjectName("txtUse")
         self.txtUse.setColumnCount(0)
         self.txtUse.setRowCount(0)
-        self.verticalLayout_2.addWidget(self.txtUse)
-        self.tabWidget.addTab(self.tabUse, "")
-        self.verticalLayout.addWidget(self.tabWidget)
+        self.gridLayout.addWidget(self.txtUse, 1, 0, 1, 2)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 800, 26))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 100, 26))
         self.menubar.setObjectName("menubar")
         MainWindow.setMenuBar(self.menubar)
         self.statusbar = QtWidgets.QStatusBar(MainWindow)
@@ -117,20 +103,20 @@ class RegulatedData(object):
 
         self.startLog()
         self.connectToDb()
-        self.populateDropDown()
-        self.ddlValues.currentTextChanged.connect(self.populateTabs)
+        self.populateAll()
+        self.btnClean.clicked.connect(self.cleanAtributes)
+        self.ddlValues.currentTextChanged.connect(self.getUse)
         self.retranslateUi(MainWindow)
-        self.tabWidget.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
-        self.label.setText(_translate("MainWindow", "Valor"))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(
-            self.tabInformation), _translate("MainWindow", "Información"))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(
-            self.tabUse), _translate("MainWindow", "Uso"))
+
+        self.btnClean.setText(_translate(
+            "MainWindow", "Limpiar búsqueda"))
+
+        self.label.setText(_translate("MainWindow", "Procesos o Libros"))
         self.menuMenu.setTitle(_translate("MainWindow", "Menu"))
         self.actionInicio.setText(_translate("MainWindow", "Inicio"))
         self.actionConsulta.setText(_translate("MainWindow", "Gráficas"))
@@ -179,66 +165,33 @@ class RegulatedData(object):
             output.append(element[column])
         return output
 
-    def populateDropDown(self):
-        query = r"select ListaTotal from RegulacionDato"
+    def populateDdl(self, atribute):
+        query = r"""
+        SELECT DISTINCT SuperConsultaUsos.NombreProcesoLibro
+        FROM SuperConsultaUsos
+        GROUP BY SuperConsultaUsos.LibroProceso, SuperConsultaUsos.NombreProcesoLibro, SuperConsultaUsos.GranDato;
+        """
         data = self.getColumn(self.exec(query), 0)
         data.insert(0, 'Selecciona un dato')
-        self.ddlValues.addItems(data)
+        return data
 
-    def populateTabs(self):
-        if ('Selecciona' not in self.ddlValues.currentText()):
-            self.getInformation()
-            self.getUse()
+    def populateAll(self):
+        self.ddlValues.clear()
+        self.ddlValues.addItems(self.populateDdl('ListaTotal'))
 
-    def getInformation(self):
-        headers = ('Regla de presentación RENAPO', 'Regla de longitud RENAPO', 'Fuente de regulación',
-                   'Columna de regulación', 'Objetivo regulatorio PLD',
-                   'Regla de distribución para uso de la autoridad PLD',
-                   'Regla de presentación de reporte regulatorio PLD',
-                   'Tipo de dato PLD', 'Longitud del dato PLD', 'Dato obligatorio',
-                   'Regla de captura del dato',
-                   'Regla de emisión envio y caracteres del archivo',
-                   'Reglas de la nomenclatura de nombre del archivo PLD',
-                   'Regla presentación de catálogo de sucursales',
-                   'Regla para sujeto obligado PLD',
-                   'Incluirlo en reporte relevante PLD',
-                   'Incluirlo en reporte inusual PLD',
-                   'Incluirlo en reporte relevante PLD',
-                   'ID grupo INAI', 'Tipo de dato INAI', 'Descripción del nivel INAI',
-                   'Fundamento regulatorio INAI', 'Tratamiento regulatorio INAI',
-                   'Derecho regulatorio de las personas INAI',
-                   'Sanciones regulatorias INAI', 'Características regulatorias del dato INAI',
-                   'Validación regulatoria INAI', 'Dato ley instituciones financieras LIC',
-                   'Regla de dato LIC', 'Regla operativa LIC', 'Regla de identificación LIC',
-                   'Regla de expediente LIC', 'Regla de resguardo documento digital LIC',
-                   'Regla de secreto bancario LIC', 'Reglas de contratación LIC',
-                   'Regla de uso de firma electrónica avanzada LIC',
-                   'Regla para extranjeros LIC', 'Regla de validación CURP LIC',
-                   'Regla de validación canal digital')
-        data = self.exec(r"""
-            select RegladePresentacionRENAPO, RegladeLongitudRenapo, FuenteRegulatoriaPLD, ColumnaRegulacionLayoutPLD,
-            ObjetivoRegulatorioPLD, RegladeDistribucionParaUsodelaAutoridadPLD, RegladePresentaciondeReporteRegulatirioPLD,
-            TipodeDatoPLD, LongituddelDatoPLD, DatoObligatorio, RegladeCapturadelDato, RegladeEmisionEnvioycaracteresdelArchivo,
-            ReglasdelaNomenclaturadeNombredelArchivoPLD, REGLADEPRESENTACIONDECATALOGODESUCURSALES, REGLAPARASUJETOOBLIGADOPLD,
-            INCLUIRLOENREPORTERELEVANTEPLD, INCLUIRLOENREPORTEINUSUALPLD, INCLUIRLOENREPORTEPREOCUPANTEPLD, IDGRUPOINAI,
-            TIPODEDATOINAI, DESCRIPCIONDENIVELINAI, FUNDAMIENTOREGULATORIOINAI, TRATAMIENTOREGULATORIOINAI, DERECHOREGULATORIODELASPERSONASINAI,
-            SANCIONESREGULATORIASINAI, CARACTERISTICASREGULATORIASDELDATOINAI, VALIDACIONREGULATORIAINAI, DATOLEYINSTITUCIONESFINANCIERAS_LIC,
-            REGLADEDATOLIC, REGLAOPERATIVALIC, REGLADEIDENTIFICACIONLIC, REGLADEEXPEDIENTELIC, REGLADERESGUARDODOCUMENTODIGITALLIC,
-            REGLADESECRETOBANCARIOLIC, REGLASDECONTRATACIONLIC, REGLADEUSODEFIRMAELECTRONICAAVANZADALIC, REGLAPARAEXTRANJEROSLIC,
-            REGLADEVALIDACIONCURPLIC, REGLADEVALIDACIONCANALDIGITAL
-            from RegulacionDato
-            where ListaTotal = '{0}'
-        """.format(self.ddlValues.currentText()))
-        self.txtInformation.setHtml(self.summary(headers, data[0]))
+    def cleanAtributes(self):
+        self.txtUse.setRowCount(0)
+        self.populateAll()
 
     def getUse(self):
-        headers = ('Nombre del proceos en libro', 'Clasificación del gran dato', 'Gran dato',
-                   'Lista total', 'Uso', 'DoctoFront')
+        headers = ('Libro o Procesos', 'Nombre del proceos o libro',
+                   'Gran dato', 'Total')
         data = self.exec(r"""
-            select super.NombreProcesoLibro, super.ClasificaciondeGranDato,
-                super.GranDato, super.ListaTotal, super.Uso, super.DoctoFront
-            from SuperConsultaUsos as super
-            where ListaTotal = '{0}'
+            SELECT SuperConsultaUsos.LibroProceso, SuperConsultaUsos.NombreProcesoLibro, 
+                    SuperConsultaUsos.GranDato, Count(SuperConsultaUsos.ListaTotal)
+            FROM SuperConsultaUsos
+            where NombreProcesoLibro = '{0}'
+            GROUP BY SuperConsultaUsos.LibroProceso, SuperConsultaUsos.NombreProcesoLibro, SuperConsultaUsos.GranDato
         """.format(self.ddlValues.currentText()))
         self.txtUse.setRowCount(len(data))
         self.txtUse.setColumnCount(len(headers))
@@ -246,7 +199,7 @@ class RegulatedData(object):
         for i in range(len(headers)):
             for j in range(len(data)):
                 self.txtUse.setItem(
-                    j, i, QtWidgets.QTableWidgetItem(data[j][i]))
+                    j, i, QtWidgets.QTableWidgetItem(str(data[j][i])))
 
     def summary(self, headers, row):
         output = ""
@@ -275,7 +228,7 @@ if __name__ == "__main__":
     import sys
     app = QtWidgets.QApplication(sys.argv)
     MainWindow = QtWidgets.QMainWindow()
-    ui = RegulatedData()
+    ui = DataInventary()
     ui.setupUi(MainWindow)
     MainWindow.show()
     sys.exit(app.exec_())
