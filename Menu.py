@@ -33,35 +33,35 @@ class Menu(object):
         self.gridLayout.setObjectName("gridLayout")
         self.btnGraphs = QtWidgets.QPushButton(self.centralwidget)
         self.btnGraphs.setObjectName("btnGraphs")
-        self.gridLayout.addWidget(self.btnGraphs, 0, 0, 1, 1)
+        self.gridLayout.addWidget(self.btnGraphs, 1, 0, 1, 1)
         self.btnSearchByWord = QtWidgets.QPushButton(self.centralwidget)
         self.btnSearchByWord.setObjectName("btnSearchByWord")
-        self.gridLayout.addWidget(self.btnSearchByWord, 1, 0, 1, 1)
+        self.gridLayout.addWidget(self.btnSearchByWord, 2, 0, 1, 1)
         self.btnRegulatedData = QtWidgets.QPushButton(self.centralwidget)
         self.btnRegulatedData.setObjectName("btnRegulatedData")
-        self.gridLayout.addWidget(self.btnRegulatedData, 2, 0, 1, 1)
+        self.gridLayout.addWidget(self.btnRegulatedData, 3, 0, 1, 1)
         self.btnDashboard = QtWidgets.QPushButton(self.centralwidget)
         self.btnDashboard.setObjectName("btnDashboard")
-        self.gridLayout.addWidget(self.btnDashboard, 3, 0, 1, 1)
+        self.gridLayout.addWidget(self.btnDashboard, 4, 0, 1, 1)
         self.btnAllData = QtWidgets.QPushButton(self.centralwidget)
         self.btnAllData.setObjectName("btnAllData")
-        self.gridLayout.addWidget(self.btnAllData, 4, 0, 1, 1)
+        self.gridLayout.addWidget(self.btnAllData, 5, 0, 1, 1)
         self.btnResidenceBigData = QtWidgets.QPushButton(self.centralwidget)
         self.btnResidenceBigData.setObjectName("btnResidenceBigData")
-        self.gridLayout.addWidget(self.btnResidenceBigData, 5, 0, 1, 1)
+        self.gridLayout.addWidget(self.btnResidenceBigData, 6, 0, 1, 1)
         self.btnProcessesBigData = QtWidgets.QPushButton(self.centralwidget)
         self.btnProcessesBigData.setObjectName("btnProcessesBigData")
-        self.gridLayout.addWidget(self.btnProcessesBigData, 6, 0, 1, 1)
+        self.gridLayout.addWidget(self.btnProcessesBigData, 7, 0, 1, 1)
         self.btnResidenceAndProcessesBigData = QtWidgets.QPushButton(
             self.centralwidget)
         self.btnResidenceAndProcessesBigData.setObjectName(
             "btnResidenceAndProcessesBigData")
         self.gridLayout.addWidget(
-            self.btnResidenceAndProcessesBigData, 7, 0, 1, 1)
+            self.btnResidenceAndProcessesBigData, 8, 0, 1, 1)
         self.btnDataInventary = QtWidgets.QPushButton(self.centralwidget)
         self.btnDataInventary.setObjectName("btnDataInventary")
         self.gridLayout.addWidget(
-            self.btnDataInventary, 8, 0, 1, 1)
+            self.btnDataInventary, 0, 0, 1, 1)
 
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
@@ -74,6 +74,9 @@ class Menu(object):
         self.menuMenu = QtWidgets.QMenu(self.menubar)
         self.menuMenu.setObjectName("menuMenu")
         MainWindow.setMenuBar(self.menubar)
+        self.actionDataInventary = QtWidgets.QAction(MainWindow)
+        self.actionDataInventary.setObjectName("actionDataInventary")
+        self.actionDataInventary.triggered.connect(self.toDataInventary)
         self.actionInicio = QtWidgets.QAction(MainWindow)
         self.actionInicio.setObjectName("actionInicio")
         self.actionInicio.triggered.connect(self.toMenu)
@@ -103,9 +106,6 @@ class Menu(object):
             "actionResidenceAndProcessesBigData")
         self.actionResidenceAndProcessesBigData.triggered.connect(
             self.toResidenceAndProcessesBigData)
-        self.actionDataInventary = QtWidgets.QAction(MainWindow)
-        self.actionDataInventary.setObjectName("actionDataInventary")
-        self.actionDataInventary.triggered.connect(self.toDataInventary)
 
         self.menuMenu.addAction(self.actionInicio)
         self.menuMenu.addSeparator()
@@ -136,14 +136,15 @@ class Menu(object):
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
-        self.btnGraphs.setText(_translate("MainWindow", "Gráficas"))
+        MainWindow.setWindowTitle(_translate("MainWindow", "Menú de opciones"))
+        MainWindow.setWindowIcon(QtGui.QIcon('favicon.ico'))
+        self.btnGraphs.setText(_translate("MainWindow", "Gráfica de grandes datos en procesos y libros"))
         self.btnRegulatedData.setText(
-            _translate("MainWindow", "Dato regulado"))
+            _translate("MainWindow", "Usos por dato regulado"))
         self.btnSearchByWord.setText(_translate(
             "MainWindow", "Búsqueda por palabra"))
         self.btnDashboard.setText(_translate("MainWindow", "Dashboard"))
-        self.btnAllData.setText(_translate("MainWindow", "Multifiltros"))
+        self.btnAllData.setText(_translate("MainWindow", "Linaje"))
         self.btnResidenceBigData.setText(_translate(
             "MainWindow", "Residencia por Gran Dato"))
         self.btnProcessesBigData.setText(_translate(
@@ -151,15 +152,15 @@ class Menu(object):
         self.btnResidenceAndProcessesBigData.setText(_translate(
             "MainWindow", "Residencia y Procesos por Gran Dato"))
         self.btnDataInventary.setText(_translate(
-            "MainWindow", "Inventario de Datos"))
+            "MainWindow", "Inventario de datos"))
         self.menuMenu.setTitle(_translate("MainWindow", "Menu"))
         self.actionInicio.setText(_translate("MainWindow", "Inicio"))
-        self.actionConsulta.setText(_translate("MainWindow", "Gráficas"))
+        self.actionConsulta.setText(_translate("MainWindow", "Gráfica de grandes datos en procesos y libros"))
         self.actionBusqueda.setText(_translate("MainWindow", "Búsqueda"))
         self.actionDatoRegulado.setText(
-            _translate("MainWindow", "Dato Regulado"))
+            _translate("MainWindow", "Usos por dato regulado"))
         self.actionDashboard.setText(_translate("MainWindow", "Dashboard"))
-        self.actionAllData.setText(_translate("MainWindow", "Multifiltros"))
+        self.actionAllData.setText(_translate("MainWindow", "Linaje"))
         self.actionResidenceBigData.setText(
             _translate("MainWindow", "Residencia por Gran Dato"))
         self.actionProcessesBigData.setText(
@@ -167,7 +168,7 @@ class Menu(object):
         self.actionResidenceAndProcessesBigData.setText(
             _translate("MainWindow", "Residencia y Procesos por Gran Dato"))
         self.actionDataInventary.setText(
-            _translate("MainWindow", "Inventario de Datos"))
+            _translate("MainWindow", "Inventario de datos"))
 
     def toSearchByWord(self):
         self.ui = Form()

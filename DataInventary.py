@@ -6,11 +6,18 @@
 #
 # WARNING! All changes made in this file will be lost!
 
-from PyQt5 import QtCore, QtGui, QtWidgets
+# from PyQt5 import QtWebEngineWidgets
+from PyQt5 import QtCore, QtGui, QtWidgets, QtWebEngineWidgets
 import pyodbc
 import logging
+import plotly
+import plotly.graph_objs as go
+import sys
 
 LOG_FORMAT = "%(levelname)s %(asctime)s - %(message)s"
+sys.argv.append("--disable-web-security")
+path = QtCore.QDir.current().filePath('./plotly-latest.min.js')
+local = QtCore.QUrl.fromLocalFile(path).toString()
 
 
 class DataInventary(object):
@@ -39,11 +46,32 @@ class DataInventary(object):
         self.ddlValues = QtWidgets.QComboBox(self.centralwidget)
         self.ddlValues.setObjectName("ddlValues")
         self.gridLayout.addWidget(self.ddlValues, 0, 1, 1, 1)
+        self.horizontalLayout = QtWidgets.QHBoxLayout()
+        self.horizontalLayout.setObjectName("horizontalLayout")
         self.txtUse = QtWidgets.QTableWidget(self.centralwidget)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+        sizePolicy.setHorizontalStretch(200)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(
+            self.txtUse.sizePolicy().hasHeightForWidth())
+        self.txtUse.setSizePolicy(sizePolicy)
         self.txtUse.setObjectName("txtUse")
         self.txtUse.setColumnCount(0)
         self.txtUse.setRowCount(0)
-        self.gridLayout.addWidget(self.txtUse, 1, 0, 1, 2)
+        self.horizontalLayout.addWidget(self.txtUse)
+        self.graph = QtWebEngineWidgets.QWebEngineView(self.centralwidget)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
+        sizePolicy.setHorizontalStretch(200)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(
+            self.graph.sizePolicy().hasHeightForWidth())
+        self.graph.setSizePolicy(sizePolicy)
+        self.graph.setUrl(QtCore.QUrl("about:blank"))
+        self.graph.setObjectName("graph")
+        self.horizontalLayout.addWidget(self.graph)
+        self.gridLayout.addLayout(self.horizontalLayout, 1, 0, 1, 2)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 100, 26))
@@ -111,7 +139,8 @@ class DataInventary(object):
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
+        MainWindow.setWindowTitle(_translate("MainWindow", "Inventario de datos"))
+        MainWindow.setWindowIcon(QtGui.QIcon('favicon.ico'))
 
         self.btnClean.setText(_translate(
             "MainWindow", "Limpiar búsqueda"))
@@ -119,12 +148,12 @@ class DataInventary(object):
         self.label.setText(_translate("MainWindow", "Procesos o Libros"))
         self.menuMenu.setTitle(_translate("MainWindow", "Menu"))
         self.actionInicio.setText(_translate("MainWindow", "Inicio"))
-        self.actionConsulta.setText(_translate("MainWindow", "Gráficas"))
+        self.actionConsulta.setText(_translate("MainWindow", "Gráfica de grandes datos en procesos y libros"))
         self.actionBusqueda.setText(_translate("MainWindow", "Búsqueda"))
         self.actionDatoRegulado.setText(
-            _translate("MainWindow", "Dato Regulado"))
+            _translate("MainWindow", "Usos por dato regulado"))
         self.actionDashboard.setText(_translate("MainWindow", "Dashboard"))
-        self.actionAllData.setText(_translate("MainWindow", "Multifiltros"))
+        self.actionAllData.setText(_translate("MainWindow", "Linaje"))
         self.actionResidenceBigData.setText(
             _translate("MainWindow", "Residencia por Gran Dato"))
         self.actionProcessesBigData.setText(
@@ -132,7 +161,7 @@ class DataInventary(object):
         self.actionResidenceAndProcessesBigData.setText(
             _translate("MainWindow", "Residencia y Procesos por Gran Dato"))
         self.actionDataInventary.setText(
-            _translate("MainWindow", "Inventario de Datos"))
+            _translate("MainWindow", "Inventario de datos"))
 
     def connectToDb(self):
         self.logger.info("Connection to DB")
@@ -172,6 +201,7 @@ class DataInventary(object):
         GROUP BY SuperConsultaUsos.LibroProceso, SuperConsultaUsos.NombreProcesoLibro, SuperConsultaUsos.GranDato;
         """
         data = self.getColumn(self.exec(query), 0)
+        data.insert(0, 'Todos')
         data.insert(0, 'Selecciona un dato')
         return data
 
@@ -186,13 +216,22 @@ class DataInventary(object):
     def getUse(self):
         headers = ('Libro o Procesos', 'Nombre del proceos o libro',
                    'Gran dato', 'Total')
-        data = self.exec(r"""
-            SELECT SuperConsultaUsos.LibroProceso, SuperConsultaUsos.NombreProcesoLibro, 
-                    SuperConsultaUsos.GranDato, Count(SuperConsultaUsos.ListaTotal)
-            FROM SuperConsultaUsos
-            where NombreProcesoLibro = '{0}'
-            GROUP BY SuperConsultaUsos.LibroProceso, SuperConsultaUsos.NombreProcesoLibro, SuperConsultaUsos.GranDato
-        """.format(self.ddlValues.currentText()))
+        query = r"""
+                SELECT SuperConsultaUsos.LibroProceso, SuperConsultaUsos.NombreProcesoLibro, 
+                        SuperConsultaUsos.GranDato, Count(SuperConsultaUsos.ListaTotal)
+                FROM SuperConsultaUsos
+                where NombreProcesoLibro = '{0}'
+                GROUP BY SuperConsultaUsos.LibroProceso, SuperConsultaUsos.NombreProcesoLibro, SuperConsultaUsos.GranDato
+            """.format(self.ddlValues.currentText())
+        if (self.ddlValues.currentText() == 'Todos'):
+            headers = ('Gran dato', 'Total')
+            query = r"""
+                    SELECT GranDato, Count(ListaTotal)
+                    FROM SuperConsultaUsos
+                    WHERE GranDato <> ''
+                    GROUP BY GranDato
+                """.format(self.ddlValues.currentText())
+        data = self.exec(query)
         self.txtUse.setRowCount(len(data))
         self.txtUse.setColumnCount(len(headers))
         self.txtUse.setHorizontalHeaderLabels(headers)
@@ -200,6 +239,7 @@ class DataInventary(object):
             for j in range(len(data)):
                 self.txtUse.setItem(
                     j, i, QtWidgets.QTableWidgetItem(str(data[j][i])))
+        self.displayPie()
 
     def summary(self, headers, row):
         output = ""
@@ -207,6 +247,43 @@ class DataInventary(object):
         for x in range(width):
             output += "<b>{0}:</b> {1}<br/>".format(headers[x], row[x])
         return output
+
+    def displayPie(self):
+        query = r"""
+            SELECT SuperConsultaUsos.GranDato, Count(SuperConsultaUsos.ListaTotal)
+            FROM SuperConsultaUsos
+            where NombreProcesoLibro = '{0}'
+            GROUP BY SuperConsultaUsos.LibroProceso, SuperConsultaUsos.NombreProcesoLibro, SuperConsultaUsos.GranDato
+        """.format(self.ddlValues.currentText())
+        if (self.ddlValues.currentText() == 'Todos'):
+            query = r"""
+                SELECT SuperConsultaUsos.GranDato, Count(SuperConsultaUsos.ListaTotal)
+                FROM SuperConsultaUsos
+                WHERE GranDato <> ''
+                GROUP BY SuperConsultaUsos.GranDato
+            """.format(self.ddlValues.currentText())
+        data = self.exec(query)
+        fig = go.Figure(go.Pie(
+            labels=self.getColumn(data, 0),
+            values=self.getColumn(data, 1),
+        ))
+        self.show(fig, "Consulta en pie")
+
+    def show(self, fig=None, title=""):
+        raw_html = '<html><head><meta charset="utf-8" />'
+        raw_html += '<script src="{}"></script></head>'.format(local)
+        raw_html += '<body>'
+        if (fig is not None):
+            margin = dict(l=0, r=0, t=25)
+            if (title != ""):
+                fig.update_layout(margin=margin, title_text=title)
+            else:
+                fig.update_layout(margin=margin)
+            raw_html += plotly.offline.plot(fig,
+                                            include_plotlyjs=False, output_type='div')
+        raw_html += '</body></html>'
+        self.graph.setHtml(raw_html)
+        self.graph.show()
 
     def setOptionsMenu(self, toMenu, toRegulatedData, toGraph, toSearchByWord,
                        toDashboard, toAllData, toResidenceBigData,

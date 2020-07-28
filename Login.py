@@ -75,7 +75,6 @@ class Login(object):
 
         self.startLog()
         self.retranslateUi(MainWindow)
-        MainWindow.setWindowTitle('BAZ Analitica Data')
         MainWindow.setWindowIcon(QtGui.QIcon('favicon.ico'))
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
         self.MainWindow = MainWindow
@@ -83,7 +82,8 @@ class Login(object):
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
+        MainWindow.setWindowTitle(_translate("MainWindow", "Iniciar sesión"))
+        MainWindow.setWindowIcon(QtGui.QIcon('favicon.ico'))
         self.label.setText(_translate("MainWindow", "Usuario"))
         self.label_2.setText(_translate("MainWindow", "Contraseña"))
         self.pushButton.setText(_translate("MainWindow", "Ingresar"))

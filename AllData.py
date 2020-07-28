@@ -167,6 +167,7 @@ class AllData(object):
         self.startLog()
         self.connectToDb()
         self.populateAll()
+        self.getUse()
         self.btnClean.clicked.connect(self.cleanAtributes)
         self.ddlValuesLibroProceso.currentTextChanged.connect(
             self.populateTabsLibroProceso)
@@ -188,14 +189,15 @@ class AllData(object):
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
+        MainWindow.setWindowTitle(_translate("MainWindow", "Linaje"))
+        MainWindow.setWindowIcon(QtGui.QIcon('favicon.ico'))
 
         self.btnClean.setText(_translate(
             "MainWindow", "Limpiar búsqueda"))
 
         self.label_5.setText(_translate("MainWindow", "Libro Proceso"))
         self.label_6.setText(_translate("MainWindow", "Uso"))
-        self.label_7.setText(_translate("MainWindow", "DoctoFront"))
+        self.label_7.setText(_translate("MainWindow", "Documento o Aplicativo"))
         self.label_8.setText(_translate(
             "MainWindow", "Nombre Dato en Documento"))
         self.label_2.setText(_translate("MainWindow", "Gran Dato"))
@@ -205,12 +207,12 @@ class AllData(object):
         self.label.setText(_translate("MainWindow", "Lista total"))
         self.menuMenu.setTitle(_translate("MainWindow", "Menu"))
         self.actionInicio.setText(_translate("MainWindow", "Inicio"))
-        self.actionConsulta.setText(_translate("MainWindow", "Gráficas"))
+        self.actionConsulta.setText(_translate("MainWindow", "Gráfica de grandes datos en procesos y libros"))
         self.actionBusqueda.setText(_translate("MainWindow", "Búsqueda"))
         self.actionDatoRegulado.setText(
-            _translate("MainWindow", "Dato Regulado"))
+            _translate("MainWindow", "Usos por dato regulado"))
         self.actionDashboard.setText(_translate("MainWindow", "Dashboard"))
-        self.actionAllData.setText(_translate("MainWindow", "Multifiltros"))
+        self.actionAllData.setText(_translate("MainWindow", "Linaje"))
         self.actionResidenceBigData.setText(
             _translate("MainWindow", "Residencia por Gran Dato"))
         self.actionProcessesBigData.setText(
@@ -218,7 +220,7 @@ class AllData(object):
         self.actionResidenceAndProcessesBigData.setText(
             _translate("MainWindow", "Residencia y Procesos por Gran Dato"))
         self.actionDataInventary.setText(
-            _translate("MainWindow", "Inventario de Datos"))
+            _translate("MainWindow", "Inventario de datos"))
 
     def connectToDb(self):
         self.logger.info("Connection to DB")
@@ -303,6 +305,7 @@ class AllData(object):
             atributes[key] = None
         self.lastChange = None
         self.enableUse = True
+        self.getUse()
 
     def populateTabs(self):
         if self.enableUse:
@@ -359,13 +362,17 @@ class AllData(object):
 
     def getUse(self):
         headers = ('Libro de Procesos', 'Nombre del proceos en libro', 'Clasificación del gran dato', 'Gran dato',
-                   'Lista total', 'Uso', 'DoctoFront', 'Nombre del dato en Documento')
+                   'Lista total', 'Uso', 'Documento o Aplicativo', 'Nombre del dato en Documento')
+        wheres = self.getWheres()
+        addWhere = "WHERE"
+        if (wheres == ''):
+            addWhere = ''
         data = self.exec(r"""
             select LibroProceso, NombreProcesoLibro, ClasificaciondeGranDato,
                 GranDato, ListaTotal, Uso, DoctoFront, NombreDatoenDocumento
             from SuperConsultaUsos
-            where {0}
-        """.format(self.getWheres()))
+            {1} {0}
+        """.format(self.getWheres(), addWhere))
         self.txtUse.setRowCount(len(data))
         self.txtUse.setColumnCount(len(headers))
         self.txtUse.setHorizontalHeaderLabels(headers)

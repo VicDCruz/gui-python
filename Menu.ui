@@ -18,7 +18,7 @@
     <item row="0" column="0">
      <widget class="QPushButton" name="btnGraphs">
       <property name="text">
-       <string>Gráficas</string>
+       <string>Gráfica de grandes datos en procesos y libros</string>
       </property>
      </widget>
     </item>

@@ -29,17 +29,17 @@
       </property>
      </widget>
     </item>
+    <item row="2" column="0">
+     <widget class="QLabel" name="label_3">
+      <property name="text">
+       <string>Clasificación de gran dato</string>
+      </property>
+     </widget>
+    </item>
     <item row="6" column="0">
      <widget class="QLabel" name="label_7">
       <property name="text">
        <string>DoctoFront</string>
-      </property>
-     </widget>
-    </item>
-    <item row="7" column="0">
-     <widget class="QLabel" name="label_8">
-      <property name="text">
-       <string>Nombre Dato en Documento</string>
       </property>
      </widget>
     </item>
@@ -50,10 +50,10 @@
       </property>
      </widget>
     </item>
-    <item row="2" column="0">
-     <widget class="QLabel" name="label_3">
+    <item row="7" column="0">
+     <widget class="QLabel" name="label_8">
       <property name="text">
-       <string>Clasificación de gran dato</string>
+       <string>Nombre Dato en Documento</string>
       </property>
      </widget>
     </item>
@@ -63,6 +63,9 @@
        <string>Nombre Proceso libro</string>
       </property>
      </widget>
+    </item>
+    <item row="0" column="1">
+     <widget class="QComboBox" name="ddlValuesListaTotal"/>
     </item>
     <item row="0" column="0">
      <widget class="QLabel" name="label">
@@ -77,39 +80,11 @@
       </property>
      </widget>
     </item>
-    <item row="0" column="1">
-     <widget class="QComboBox" name="ddlValuesListaTotal"/>
+    <item row="3" column="1">
+     <widget class="QComboBox" name="ddlValuesNombreProceso"/>
     </item>
-    <item row="8" column="0" colspan="2">
-     <widget class="QTabWidget" name="tabWidget">
-      <property name="currentIndex">
-       <number>0</number>
-      </property>
-      <widget class="QWidget" name="tabInformation">
-       <attribute name="title">
-        <string>Información</string>
-       </attribute>
-       <layout class="QHBoxLayout" name="horizontalLayout_2">
-        <item>
-         <widget class="QTextEdit" name="txtInformation">
-          <property name="enabled">
-           <bool>false</bool>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </widget>
-      <widget class="QWidget" name="tabUse">
-       <attribute name="title">
-        <string>Uso</string>
-       </attribute>
-       <layout class="QVBoxLayout" name="verticalLayout_2">
-        <item>
-         <widget class="QTableWidget" name="txtUse"/>
-        </item>
-       </layout>
-      </widget>
-     </widget>
+    <item row="4" column="1">
+     <widget class="QComboBox" name="ddlValuesLibroProceso"/>
     </item>
     <item row="1" column="1">
      <widget class="QComboBox" name="ddlValuesGranDato"/>
@@ -117,20 +92,43 @@
     <item row="2" column="1">
      <widget class="QComboBox" name="ddlValuesClasificacion"/>
     </item>
-    <item row="3" column="1">
-     <widget class="QComboBox" name="ddlValuesNombreProceso"/>
-    </item>
-    <item row="4" column="1">
-     <widget class="QComboBox" name="ddlValuesLibroProceso"/>
-    </item>
-    <item row="5" column="1">
-     <widget class="QComboBox" name="ddlValuesUso"/>
-    </item>
     <item row="6" column="1">
      <widget class="QComboBox" name="ddlValuesDoctoFront"/>
     </item>
     <item row="7" column="1">
      <widget class="QComboBox" name="ddlValuesNombreDato"/>
+    </item>
+    <item row="5" column="1">
+     <widget class="QComboBox" name="ddlValuesUso"/>
+    </item>
+    <item row="8" column="0" colspan="2">
+     <layout class="QHBoxLayout" name="horizontalLayout">
+      <item>
+       <widget class="QTableWidget" name="txtUse">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+          <horstretch>200</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QWebEngineView" name="graph">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+          <horstretch>200</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="url">
+         <url>
+          <string>about:blank</string>
+         </url>
+        </property>
+       </widget>
+      </item>
+     </layout>
     </item>
    </layout>
   </widget>
@@ -146,6 +144,13 @@
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>QWebEngineView</class>
+   <extends>QWidget</extends>
+   <header location="global">QtWebEngineWidgets/QWebEngineView</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>

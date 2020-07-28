@@ -207,7 +207,8 @@ class Form(object):
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
+        MainWindow.setWindowTitle(_translate("MainWindow", "Búsqueda por Palabra"))
+        MainWindow.setWindowIcon(QtGui.QIcon('favicon.ico'))
         self.label_2.setText(_translate("MainWindow", "Resultados"))
         self.btnSearch.setText(_translate("MainWindow", "Buscar"))
         self.label.setText(_translate("MainWindow", "Dato"))
@@ -225,12 +226,12 @@ class Form(object):
         self.lblPagination.setText(_translate("MainWindow", "de"))
         self.menuMenu.setTitle(_translate("MainWindow", "Menu"))
         self.actionInicio.setText(_translate("MainWindow", "Inicio"))
-        self.actionConsulta.setText(_translate("MainWindow", "Gráficas"))
+        self.actionConsulta.setText(_translate("MainWindow", "Gráfica de grandes datos en procesos y libros"))
         self.actionBusqueda.setText(_translate("MainWindow", "Búsqueda"))
         self.actionDatoRegulado.setText(
-            _translate("MainWindow", "Dato Regulado"))
+            _translate("MainWindow", "Usos por dato regulado"))
         self.actionDashboard.setText(_translate("MainWindow", "Dashboard"))
-        self.actionAllData.setText(_translate("MainWindow", "Multifiltros"))
+        self.actionAllData.setText(_translate("MainWindow", "Linaje"))
         self.actionResidenceBigData.setText(
             _translate("MainWindow", "Residencia por Gran Dato"))
         self.actionProcessesBigData.setText(
@@ -238,7 +239,7 @@ class Form(object):
         self.actionResidenceAndProcessesBigData.setText(
             _translate("MainWindow", "Residencia y Procesos por Gran Dato"))
         self.actionDataInventary.setText(
-            _translate("MainWindow", "Inventario de Datos"))
+            _translate("MainWindow", "Inventario de datos"))
 
     def setOptionsMenu(self, toMenu, toRegulatedData, toGraph, toSearchByWord,
                        toDashboard, toAllData, toResidenceBigData,

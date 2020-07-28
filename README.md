@@ -4,7 +4,7 @@ Explore a new to create a GUI for Windows. Also, building and deploying it.
 # Comandos importantes
 - `pyuic5 -x ventana.ui -o ventana_ui.py`
 - `pyinstaller --onedir -w --icon=favicon.ico Login.py`
-- `pyinstaller .\Login.spec .\Login.py`
+- `pyinstaller --noconfirm .\Login.spec .\Login.py`
 
 Ruta de Anaconda: `C:\Users\vicda\anaconda3\Library\bin`
 

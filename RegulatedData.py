@@ -125,7 +125,8 @@ class RegulatedData(object):
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
+        MainWindow.setWindowTitle(_translate("MainWindow", "Datos regulados"))
+        MainWindow.setWindowIcon(QtGui.QIcon('favicon.ico'))
         self.label.setText(_translate("MainWindow", "Valor"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(
             self.tabInformation), _translate("MainWindow", "Información"))
@@ -133,12 +134,12 @@ class RegulatedData(object):
             self.tabUse), _translate("MainWindow", "Uso"))
         self.menuMenu.setTitle(_translate("MainWindow", "Menu"))
         self.actionInicio.setText(_translate("MainWindow", "Inicio"))
-        self.actionConsulta.setText(_translate("MainWindow", "Gráficas"))
+        self.actionConsulta.setText(_translate("MainWindow", "Gráfica de grandes datos en procesos y libros"))
         self.actionBusqueda.setText(_translate("MainWindow", "Búsqueda"))
         self.actionDatoRegulado.setText(
-            _translate("MainWindow", "Dato Regulado"))
+            _translate("MainWindow", "Usos por dato regulado"))
         self.actionDashboard.setText(_translate("MainWindow", "Dashboard"))
-        self.actionAllData.setText(_translate("MainWindow", "Multifiltros"))
+        self.actionAllData.setText(_translate("MainWindow", "Linaje"))
         self.actionResidenceBigData.setText(
             _translate("MainWindow", "Residencia por Gran Dato"))
         self.actionProcessesBigData.setText(
@@ -146,7 +147,7 @@ class RegulatedData(object):
         self.actionResidenceAndProcessesBigData.setText(
             _translate("MainWindow", "Residencia y Procesos por Gran Dato"))
         self.actionDataInventary.setText(
-            _translate("MainWindow", "Inventario de Datos"))
+            _translate("MainWindow", "Inventario de datos"))
 
     def connectToDb(self):
         self.logger.info("Connection to DB")
