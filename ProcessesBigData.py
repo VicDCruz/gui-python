@@ -148,7 +148,6 @@ class ProcessesBigData(object):
         self.menuMenu.addAction(self.actionDataInventary)
         self.menubar.addAction(self.menuMenu.menuAction())
 
-        self.startLog()
         self.connectToDb()
         self.btnContract.clicked.connect(self.contract)
         self.btnExpand.clicked.connect(self.expand)
@@ -185,20 +184,12 @@ class ProcessesBigData(object):
             _translate("MainWindow", "Inventario de datos"))
 
     def connectToDb(self):
-        self.logger.info("Connection to DB")
         accessDriver = r'Microsoft Access Driver (*.mdb, *.accdb)'
         filepath = r'./AnaliticaData.accdb'
         self.conn = pyodbc.connect(driver=accessDriver,
                                    dbq=filepath, autocommit=True)
 
-    def startLog(self):
-        logging.basicConfig(filename='Lumberjack.log',
-                            level=logging.DEBUG, format=LOG_FORMAT)
-        self.logger = logging.getLogger()
-
     def exec(self, query, values=None):
-        self.logger.info("Execute query")
-        self.logger.debug("QUERY: {0}".format(query))
         cursor = self.conn.cursor()
         if (values is not None):
             cursor.execute(query, values)
@@ -206,7 +197,6 @@ class ProcessesBigData(object):
             cursor.execute(query)
         output = cursor.fetchall()
         cursor.close()
-        self.logger.debug("LENGTHDATA: {0}".format(len(output)))
         return output
 
     def show(self, fig=None, title=""):

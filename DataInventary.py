@@ -150,7 +150,6 @@ class DataInventary(object):
         self.menubar.addAction(self.menuMenu.menuAction())
 
         self.circle = 0
-        self.startLog()
         self.connectToDb()
         self.populateAll()
         self.btnContract.clicked.connect(self.contract)
@@ -192,20 +191,12 @@ class DataInventary(object):
             _translate("MainWindow", "Inventario de datos"))
 
     def connectToDb(self):
-        self.logger.info("Connection to DB")
         accessDriver = r'Microsoft Access Driver (*.mdb, *.accdb)'
         filepath = r'./AnaliticaData.accdb'
         self.conn = pyodbc.connect(driver=accessDriver,
                                    dbq=filepath, autocommit=True)
 
-    def startLog(self):
-        logging.basicConfig(filename='Lumberjack.log',
-                            level=logging.DEBUG, format=LOG_FORMAT)
-        self.logger = logging.getLogger()
-
     def exec(self, query, values=None):
-        self.logger.info("Execute query")
-        self.logger.debug("QUERY: {0}".format(query))
         cursor = self.conn.cursor()
         if (values is not None):
             cursor.execute(query, values)
@@ -213,7 +204,6 @@ class DataInventary(object):
             cursor.execute(query)
         output = cursor.fetchall()
         cursor.close()
-        self.logger.debug("LENGTHDATA: {0}".format(len(output)))
         return output
 
     def getColumn(self, data, column):

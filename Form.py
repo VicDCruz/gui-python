@@ -197,7 +197,6 @@ class Form(object):
         self.menubar.addAction(self.menuMenu.menuAction())
 
         self.MainWindow = MainWindow
-        self.startLog()
         self.connectToDb()
         self.setByProcess()
         self.index = 1
@@ -207,7 +206,8 @@ class Form(object):
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "Búsqueda por Palabra"))
+        MainWindow.setWindowTitle(_translate(
+            "MainWindow", "Búsqueda por Palabra"))
         MainWindow.setWindowIcon(QtGui.QIcon('favicon.ico'))
         self.label_2.setText(_translate("MainWindow", "Resultados"))
         self.btnSearch.setText(_translate("MainWindow", "Buscar"))
@@ -226,7 +226,8 @@ class Form(object):
         self.lblPagination.setText(_translate("MainWindow", "de"))
         self.menuMenu.setTitle(_translate("MainWindow", "Menu"))
         self.actionInicio.setText(_translate("MainWindow", "Inicio"))
-        self.actionConsulta.setText(_translate("MainWindow", "Gráfica de grandes datos en procesos y libros"))
+        self.actionConsulta.setText(_translate(
+            "MainWindow", "Gráfica de grandes datos en procesos y libros"))
         self.actionBusqueda.setText(_translate("MainWindow", "Búsqueda"))
         self.actionDatoRegulado.setText(
             _translate("MainWindow", "Usos por dato regulado"))
@@ -294,7 +295,6 @@ class Form(object):
         self.headers = headers
 
     def connectToDb(self):
-        self.logger.info("Connection to DB")
         accessDriver = r'Microsoft Access Driver (*.mdb, *.accdb)'
         filepath = r'./AnaliticaData.accdb'
         self.conn = pyodbc.connect(driver=accessDriver,
@@ -305,8 +305,6 @@ class Form(object):
         #     self.comboBox.addItem(row[0])
 
     def exec(self, query, values=None):
-        self.logger.info("Execute query")
-        self.logger.debug("QUERY: {0}".format(query))
         cursor = self.conn.cursor()
         if (values is not None):
             cursor.execute(query, values)
@@ -314,20 +312,16 @@ class Form(object):
             cursor.execute(query)
         output = cursor.fetchall()
         cursor.close()
-        self.logger.debug("LENGTHDATA: {0}".format(len(output)))
         return output
 
     def search(self):
         word = self.txtWord.text()
-        self.logger.debug("Word: " + word)
         if (word is not None and word != ''):
             self.data = self.exec(self.query, word)
             if (len(self.data) > 0):
                 self.index = 1
                 self.limitPagination = len(self.data)
                 self.populateTable()
-        else:
-            self.logger.info("Empty word")
 
     def populateTable(self):
         self.textEdit.setHtml(self.summary(self.data[self.index - 1]))
@@ -340,11 +334,6 @@ class Form(object):
         for x in range(width):
             output += "<b>{0}:</b> {1}<br/>".format(self.headers[x], row[x])
         return output
-
-    def startLog(self):
-        logging.basicConfig(filename='Lumberjack.log',
-                            level=logging.DEBUG, format=LOG_FORMAT)
-        self.logger = logging.getLogger()
 
 
 if __name__ == "__main__":

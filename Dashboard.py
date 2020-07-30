@@ -160,7 +160,6 @@ class Dashboard(object):
         self.menuMenu.addAction(self.actionDataInventary)
         self.menubar.addAction(self.menuMenu.menuAction())
 
-        self.startLog()
         self.connectToDb()
         self.populateDropDown()
         self.ddlNameProcessBook.currentTextChanged.connect(
@@ -179,7 +178,8 @@ class Dashboard(object):
             "MainWindow", "Cuenta total desglosada"))
         self.menuMenu.setTitle(_translate("MainWindow", "Menu"))
         self.actionInicio.setText(_translate("MainWindow", "Inicio"))
-        self.actionConsulta.setText(_translate("MainWindow", "Gráfica de grandes datos en procesos y libros"))
+        self.actionConsulta.setText(_translate(
+            "MainWindow", "Gráfica de grandes datos en procesos y libros"))
         self.actionBusqueda.setText(_translate("MainWindow", "Búsqueda"))
         self.actionDatoRegulado.setText(
             _translate("MainWindow", "Usos por dato regulado"))
@@ -195,20 +195,12 @@ class Dashboard(object):
             _translate("MainWindow", "Inventario de datos"))
 
     def connectToDb(self):
-        self.logger.info("Connection to DB")
         accessDriver = r'Microsoft Access Driver (*.mdb, *.accdb)'
         filepath = r'./AnaliticaData.accdb'
         self.conn = pyodbc.connect(driver=accessDriver,
                                    dbq=filepath, autocommit=True)
 
-    def startLog(self):
-        logging.basicConfig(filename='Lumberjack.log',
-                            level=logging.DEBUG, format=LOG_FORMAT)
-        self.logger = logging.getLogger()
-
     def exec(self, query, values=None):
-        self.logger.info("Execute query")
-        self.logger.debug("QUERY: {0}".format(query))
         cursor = self.conn.cursor()
         if (values is not None):
             cursor.execute(query, values)
@@ -216,7 +208,6 @@ class Dashboard(object):
             cursor.execute(query)
         output = cursor.fetchall()
         cursor.close()
-        self.logger.debug("LENGTHDATA: {0}".format(len(output)))
         return output
 
     def getColumn(self, data, column):

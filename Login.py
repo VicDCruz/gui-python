@@ -73,12 +73,10 @@ class Login(object):
         self.statusbar.setObjectName("statusbar")
         MainWindow.setStatusBar(self.statusbar)
 
-        self.startLog()
         self.retranslateUi(MainWindow)
         MainWindow.setWindowIcon(QtGui.QIcon('favicon.ico'))
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
         self.MainWindow = MainWindow
-
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
@@ -91,7 +89,6 @@ class Login(object):
     def changeToLogin(self):
         self.ui = Menu()
         self.MainWindow.move(600, 100)
-        self.logger.info("Successful login")
         self.ui.setupUi(self.MainWindow)
 
     def checkCredentials(self):
@@ -101,10 +98,6 @@ class Login(object):
         else:
             self.lblIncorrect.setText('Datos incorrectos')
 
-    def startLog(self):
-        logging.basicConfig(filename='Lumberjack.log',
-                            level=logging.DEBUG, format=LOG_FORMAT)
-        self.logger = logging.getLogger()
 
 if __name__ == "__main__":
     import sys

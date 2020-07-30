@@ -138,7 +138,8 @@ class Menu(object):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "Menú de opciones"))
         MainWindow.setWindowIcon(QtGui.QIcon('favicon.ico'))
-        self.btnGraphs.setText(_translate("MainWindow", "Gráfica de grandes datos en procesos y libros"))
+        self.btnGraphs.setText(_translate(
+            "MainWindow", "Gráfica de grandes datos en procesos y libros"))
         self.btnRegulatedData.setText(
             _translate("MainWindow", "Usos por dato regulado"))
         self.btnSearchByWord.setText(_translate(
@@ -155,7 +156,8 @@ class Menu(object):
             "MainWindow", "Inventario de datos"))
         self.menuMenu.setTitle(_translate("MainWindow", "Menu"))
         self.actionInicio.setText(_translate("MainWindow", "Inicio"))
-        self.actionConsulta.setText(_translate("MainWindow", "Gráfica de grandes datos en procesos y libros"))
+        self.actionConsulta.setText(_translate(
+            "MainWindow", "Gráfica de grandes datos en procesos y libros"))
         self.actionBusqueda.setText(_translate("MainWindow", "Búsqueda"))
         self.actionDatoRegulado.setText(
             _translate("MainWindow", "Usos por dato regulado"))
@@ -255,11 +257,6 @@ class Menu(object):
             self.toProcessesBigData, self.toResidenceAndProcessesBigData, self.toDataInventary)
         self.MainWindow.move(600, 100)
         self.ui.setupUi(self.MainWindow)
-
-    def startLog(self):
-        logging.basicConfig(filename='Lumberjack.log',
-                            level=logging.DEBUG, format=LOG_FORMAT)
-        self.logger = logging.getLogger()
 
 
 if __name__ == "__main__":
